@@ -9,10 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    controller/ClientSocket.cpp \
     main.cpp \
+    model/Chat.cpp \
+    model/Plant.cpp \
+    model/Post.cpp \
+    model/User.cpp \
     view/ClientMainWindow.cpp
 
 HEADERS += \
+    controller/ClientSocket.h \
+    model/Chat.h \
+    model/Plant.h \
+    model/Post.h \
+    model/User.h \
     view/ClientMainWindow.h
 
 INCLUDEPATH += \
