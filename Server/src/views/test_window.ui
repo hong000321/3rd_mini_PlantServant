@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>TestWindow</class>
+ <widget class="QMainWindow" name="TestWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="layoutDirection">
+       <enum>Qt::LayoutDirection::LeftToRight</enum>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::TabPosition::North</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::TextElideMode::ElideNone</enum>
+      </property>
+      <property name="tabsClosable">
+       <bool>false</bool>
+      </property>
+      <property name="movable">
+       <bool>false</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>false</bool>
+      </property>
+      <widget class="QWidget" name="userRepo">
+       <attribute name="title">
+        <string>userRepo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_userRepoTest">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>userRepoTest</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="lineEdit_userRepoPath">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>50</y>
+          <width>281</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>empty</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label">
+        <property name="geometry">
+         <rect>
+          <x>30</x>
+          <y>50</y>
+          <width>61</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>userRepoPath</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="productRepo">
+       <attribute name="title">
+        <string>productRepo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_userRepoTest_2">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>productRepoTest</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="orderRepo">
+       <attribute name="title">
+        <string>orderRepo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_userRepoTest_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>orderRepoTest</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="chatRepo">
+       <attribute name="title">
+        <string>chatRepo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_userRepoTest_4">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>chatRepoTest</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="logRepo">
+       <attribute name="title">
+        <string>logRepo</string>
+       </attribute>
+       <widget class="QPushButton" name="pushButton_userRepoTest_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>191</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>logRepoTest</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>17</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

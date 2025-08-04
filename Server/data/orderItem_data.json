@@ -1,0 +1,62 @@
+[
+    {
+        "itemId": 1,
+        "productId": 1,
+        "quantity": 2,
+        "unitPrice": 1200000
+    },
+    {
+        "itemId": 2,
+        "productId": 5,
+        "quantity": 1,
+        "unitPrice": 350000
+    },
+    {
+        "itemId": 3,
+        "productId": 2,
+        "quantity": 1,
+        "unitPrice": 1300000
+    },
+    {
+        "itemId": 4,
+        "productId": 7,
+        "quantity": 2,
+        "unitPrice": 180000
+    },
+    {
+        "itemId": 5,
+        "productId": 3,
+        "quantity": 1,
+        "unitPrice": 2500000
+    },
+    {
+        "itemId": 6,
+        "productId": 4,
+        "quantity": 1,
+        "unitPrice": 800000
+    },
+    {
+        "itemId": 7,
+        "productId": 9,
+        "quantity": 1,
+        "unitPrice": 400000
+    },
+    {
+        "itemId": 8,
+        "productId": 6,
+        "quantity": 1,
+        "unitPrice": 1800000
+    },
+    {
+        "itemId": 9,
+        "productId": 8,
+        "quantity": 1,
+        "unitPrice": 900000
+    },
+    {
+        "itemId": 10,
+        "productId": 10,
+        "quantity": 1,
+        "unitPrice": 800000
+    }
+]
