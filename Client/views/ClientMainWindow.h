@@ -1,6 +1,10 @@
 #ifndef CLIENTMAINWINDOW_H
 #define CLIENTMAINWINDOW_H
 
+#include "controllers/ClientSocket.h"
+#include "models/service/UserService.h"
+#include "LoginMainWindow.h"
+
 #include <QMainWindow>
 
 QT_BEGIN_NAMESPACE
@@ -14,7 +18,7 @@ class ClientMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    ClientMainWindow(QWidget *parent = nullptr);
+    explicit ClientMainWindow(ClientSocket* socket = nullptr, QWidget* parent = nullptr);
     ~ClientMainWindow();
 
 private slots:
@@ -22,7 +26,6 @@ private slots:
     void on_button_myplant_clicked();
 
     void on_button_writepost_clicked();
-
 
     void on_button_back3_clicked();
 
@@ -32,5 +35,8 @@ private slots:
 
 private:
     Ui::ClientMainWindow *ui;
+    ClientSocket* socket_;
+    UserService* userService_;
+    LoginMainWindow* loginMainWindow_;
 };
 #endif // CLIENTMAINWINDOW_H

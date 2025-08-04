@@ -1,20 +1,22 @@
 #include "ClientMainWindow.h"
 #include "ui_ClientMainWindow.h"
+#include "LoginMainWindow.h"
+#include "ClientSocket.h"
 
-ClientMainWindow::ClientMainWindow(QWidget *parent)
+ClientMainWindow::ClientMainWindow(ClientSocket* socket, QWidget* parent)
     : QMainWindow(parent)
     , ui(new Ui::ClientMainWindow)
+    , userService_(userService)
 {
+    socket_ = userService_->socket();
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
-
 }
 
 ClientMainWindow::~ClientMainWindow()
 {
     delete ui;
 }
-
 
 void ClientMainWindow::on_button_myplant_clicked()
 {

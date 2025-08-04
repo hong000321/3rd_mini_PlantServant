@@ -353,6 +353,7 @@ void ClientSocket::processIncomingData()
     }
 }
 
+//json packet만들기
 QByteArray ClientSocket::createJsonPacket(const QByteArray &jsonData)
 {
     QByteArray packet;
@@ -365,11 +366,13 @@ QByteArray ClientSocket::createJsonPacket(const QByteArray &jsonData)
     return packet;
 }
 
+
 QString ClientSocket::generateMessageId()
 {
     return QUuid::createUuid().toString(QUuid::WithoutBraces);
 }
 
+/* createCommandMessage */
 QJsonObject ClientSocket::createCommandMessage(const QString &action, const QString &target,
                                                const QJsonObject &parameters)
 {
@@ -397,6 +400,7 @@ QJsonObject ClientSocket::createCommandMessage(const QString &action, const QStr
     return message;
 }
 
+//서버로 sendMessage
 bool ClientSocket::sendMessage(const QJsonObject &message)
 {
     if (!isConnected()) {
@@ -499,38 +503,7 @@ void ClientSocket::handleResponse(const QJsonObject &response)
             emit productDeleted(success);
         }
     }
-    else if (target == "order") {
-        if (action == "create") {
-            if (success) {
-                emit orderCreated(data);
-            }
-        } else if (action == "get") {
-            if (success) {
-                emit orderReceived(data);
-            }
-        } else if (action == "list") {
-            if (success && data.contains("orders")) {
-                emit orderListReceived(data.value("orders").toArray());
-            }
-        } else if (action == "update") {
-            if (success) {
-                emit orderUpdated(data);
-            }
-        }
-    }
-    else if (target == "orderitem") {
-        if (action == "add") {
-            if (success) {
-                emit orderItemAdded(data);
-            }
-        } else if (action == "update") {
-            if (success) {
-                emit orderItemUpdated(data);
-            }
-        } else if (action == "remove") {
-            emit orderItemRemoved(success);
-        }
-    }
+
     else if (target == "chatroom") {
         if (action == "create") {
             if (success) {

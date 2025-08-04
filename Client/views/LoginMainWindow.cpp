@@ -1,64 +1,61 @@
 #include "LoginMainWindow.h"
-#include "qjsonobject.h"
-#include "ui_login_main_window.h"
+#include "ui_LoginMainWindow.h"
 
+#include <QJsonObject>
+#include <QDebug>
 
-LoginMainWindow::LoginMainWindow(QWidget *parent,ClientSocket* client_socket)
+LoginMainWindow::LoginMainWindow(QWidget *parent, UserService* userService)
     : QMainWindow(parent)
     , ui(new Ui::LoginMainWindow)
-    , m_client(client_socket)
+    , isLoggedIn_(false)
+    , userService_(userService)
+
 {
-    m_register = new JoinMemberMainWindow(nullptr, m_client);
     ui->setupUi(this);
-    connect(m_client, &ClientSocket::loginResponse,this, &LoginMainWindow::onLoginResponse);
-    connect(m_client, &ClientSocket::logoutResponse,this, &LoginMainWindow::onLogoutResponse);
+
+    // JoinMember 창도 같은 userService 사용
+    register_ = new JoinMemberMainWindow(nullptr, userService_);
+
+    connect(userService_, &UserService::loginSuccess, this, &LoginMainWindow::onLoginSuccess);
+    connect(userService_, &UserService::loginFailed, this, &LoginMainWindow::onLoginFailed);
+
     this->show();
 }
 
 LoginMainWindow::~LoginMainWindow()
 {
-    m_client->logout();
+    userService_->logout();
     delete ui;
 }
 
 void LoginMainWindow::on_pushButton_login_clicked()
 {
+
     QString strId = ui->lineEdit_id->text();
     QString password = ui->lineEdit_pw->text();
-
-    m_client->login(strId, password);
+    userService_->login(strId, password);
 }
-
 
 void LoginMainWindow::on_pushButton_register_clicked()
 {
-    m_register->show();
+    register_->show();
 }
 
-void LoginMainWindow::onLoginResponse(bool success, const QJsonObject &userData)
+void LoginMainWindow::onLoginSuccess(const QJsonObject &userData)
 {
-    if (success) {
-        QString name = userData.value("name").toString();
-        QString sessionId = userData.value("sessionId").toString();
-        int userId = userData.value("userId").toInt();
-        m_isLoggedIn = true;
+    QString name = userData.value("name").toString();
+    QString sessionId = userData.value("sessionId").toString();
+    int userId = userData.value("userId").toInt();
+    isLoggedIn_ = true;
 
-        qDebug() << QString("✅ 로그인 성공: %1 (ID: %2, 세션: %3)").arg(name).arg(userId).arg(sessionId);
-        close();
-    } else {
-        qDebug() << "❌ 로그인 실패";
-        m_isLoggedIn = false;
-    }
+    qDebug() << QString("✅ 로그인 성공: %1 (ID: %2, 세션: %3)").arg(name).arg(userId).arg(sessionId);
+
+    emit loginSuccess(userData);  // 외부에서 감지 가능
+    close();
 }
 
-void LoginMainWindow::onLogoutResponse(bool success)
+void LoginMainWindow::onLoginFailed(const QString& reason)
 {
-    if (success) {
-        qDebug() << "✅ 로그아웃 성공";
-        m_isLoggedIn = false;
-    } else {
-        qDebug() << "❌ 로그아웃 실패";
-    }
+    qDebug() << "❌ 로그인 실패:" << reason;
+    isLoggedIn_ = false;
 }
-
-

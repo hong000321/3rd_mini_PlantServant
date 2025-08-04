@@ -16,7 +16,10 @@ SOURCES += \
     models/entity/Plant.cpp \
     models/entity/Post.cpp \
     models/entity/User.cpp \
-    views/ClientMainWindow.cpp
+    models/service/UserService.cpp \
+    views/ClientMainWindow.cpp \
+    views/JoinMemberMainWindow.cpp \
+    views/LoginMainWindow.cpp
 
 HEADERS += \
     controllers/ClientSocket.h \
@@ -25,8 +28,10 @@ HEADERS += \
     models/entity/Plant.h \
     models/entity/Post.h \
     models/entity/User.h \
+    models/service/UserService.h \
     views/ClientMainWindow.h \
     views/JoinMemberMainWindow.h \
+    views/LoginMainWindow.h \
     utils/CustomErrorCodes.h
 
 
