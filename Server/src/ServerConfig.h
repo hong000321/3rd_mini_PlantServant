@@ -7,9 +7,8 @@
 #define LOG_FILE_PATH       "./../../log/"
 
 #define USER_FILE_NAME        "user_data"
-#define PRODUCT_FILE_NAME     "product_data"
-#define ORDER_FILE_NAME       "order_data"
-#define ORDERITEM_FILE_NAME   "orderItem_data"
+#define PLANT_FILE_NAME       "plant_data"
+#define POST_FILE_NAME       "post_data"
 #define CHAT_FILE_NAME        "chatUnit_data"
 #define CHATROOM_FILE_NAME    "chatRoom_data"
 #define JSON_FILE_EXTENSION   ".json"
@@ -32,9 +31,8 @@ public:
     static void destroyInstance();
 
     QString userFilePath        = DATA_FILE_PATH USER_FILE_NAME      JSON_FILE_EXTENSION;
-    QString productFilePath     = DATA_FILE_PATH PRODUCT_FILE_NAME   JSON_FILE_EXTENSION;
-    QString orderFilePath       = DATA_FILE_PATH ORDER_FILE_NAME     JSON_FILE_EXTENSION;
-    QString orderItemFilePath   = DATA_FILE_PATH ORDERITEM_FILE_NAME JSON_FILE_EXTENSION;
+    QString plantFilePath       = DATA_FILE_PATH PLANT_FILE_NAME     JSON_FILE_EXTENSION;
+    QString postFilePath        = DATA_FILE_PATH POST_FILE_NAME      JSON_FILE_EXTENSION;
     QString chatFilePath        = DATA_FILE_PATH CHAT_FILE_NAME      JSON_FILE_EXTENSION;
     QString chatRoomFilePath    = DATA_FILE_PATH CHATROOM_FILE_NAME  JSON_FILE_EXTENSION;
     QString logFilePath         = LOG_FILE_PATH  LOG_FILE_NAME       JSON_FILE_EXTENSION;

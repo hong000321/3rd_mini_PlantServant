@@ -1,4 +1,3 @@
-// ProtocolController.cpp (userId 기반으로 수정)
 #include "ProtocolController.h"
 #include "SocketServer.h"
 #include <QDebug>
@@ -9,12 +8,12 @@ ProtocolController::ProtocolController(QObject *parent)
     : QObject(parent)
     , socketServer_(nullptr)
 {
-    // 서비스 인스턴스 가져오기
+    // 서비스 인스턴스 가져오기 (PostManageService 추가)
     userService_ = UserManageService::getInstance();
     chatService_ = ChatManageService::getInstance();
     loginService_ = LoginService::getInstance();
-    productService_ = ProductManageService::getInstance();
-    orderService_ = OrderManageService::getInstance();
+    plantService_ = PlantManageService::getInstance();
+    postService_ = PostManageService::getInstance();
 
     // 채팅 관련 시그널 연결
     connect(chatService_, &ChatManageService::messageSent,
@@ -30,21 +29,21 @@ ProtocolController::ProtocolController(QObject *parent)
 ProtocolController::~ProtocolController()
 {
     userService_->saveUsers();
-    productService_->saveProducts();
-    orderService_->saveOrders();
+    plantService_->savePlants();
+    postService_->savePosts();
     chatService_->saveChatData();
 }
 
-bool ProtocolController::initialize(const QString& userFilePath, const QString& productFilePath,
-                                    const QString& orderFilePath, const QString& orderItemFilePath,
-                                    const QString& chatRoomFilePath, const QString& chatFilePath)
+bool ProtocolController::initialize(const QString& userFilePath, const QString& plantFilePath,
+                                    const QString& postFilePath, const QString& chatRoomFilePath,
+                                    const QString& chatFilePath)
 {
     bool success = true;
 
     success &= userService_->loadUsers(userFilePath);
     success &= chatService_->loadChatData(chatRoomFilePath, chatFilePath);
-    success &= productService_->loadProducts(productFilePath);
-    success &= orderService_->loadOrders(orderFilePath, orderItemFilePath);
+    success &= plantService_->loadPlants(plantFilePath);
+    success &= postService_->loadPosts(postFilePath);
 
     if (success) {
         qDebug() << "ProtocolController initialized successfully";
@@ -104,26 +103,23 @@ QJsonObject ProtocolController::processCommand(const QJsonObject &header, const 
         if (action == "get") return handleUserGet(parameters);
         if (action == "update") return handleUserUpdate(parameters);
     }
-    // Product 관련 처리
-    else if (target == "product") {
-        if (action == "list") return handleProductList(parameters);
-        if (action == "get") return handleProductGet(parameters);
-        if (action == "create") return handleProductCreate(parameters);
-        if (action == "update") return handleProductUpdate(parameters);
-        if (action == "delete") return handleProductDelete(parameters);
+    // Plant 관련 처리
+    else if (target == "plant") {
+        if (action == "list") return handlePlantList(parameters);
+        if (action == "get") return handlePlantGet(parameters);
+        if (action == "create") return handlePlantCreate(parameters);
+        if (action == "update") return handlePlantUpdate(parameters);
+        if (action == "delete") return handlePlantDelete(parameters);
+        if (action == "sensor_update") return handlePlantSensorUpdate(parameters);
     }
-    // Order 관련 처리
-    else if (target == "order") {
-        if (action == "create") return handleOrderCreate(parameters);
-        if (action == "get") return handleOrderGet(parameters);
-        if (action == "list") return handleOrderList(parameters);
-        if (action == "update") return handleOrderUpdate(parameters);
-    }
-    // OrderItem 관련 처리
-    else if (target == "orderitem") {
-        if (action == "add") return handleOrderItemAdd(parameters);
-        if (action == "update") return handleOrderItemUpdate(parameters);
-        if (action == "remove") return handleOrderItemRemove(parameters);
+    // Post 관련 처리
+    else if (target == "post") {
+        if (action == "list") return handlePostList(parameters);
+        if (action == "get") return handlePostGet(parameters);
+        if (action == "create") return handlePostCreate(parameters,clientId);
+        if (action == "update") return handlePostUpdate(parameters,clientId);
+        if (action == "delete") return handlePostDelete(parameters,clientId);
+        if (action == "search") return handlePostSearch(parameters);
     }
     // Chat 관련 처리
     else if (target == "chatroom") {
@@ -292,167 +288,302 @@ QJsonObject ProtocolController::handleUserUpdate(const QJsonObject &parameters)
     return createErrorResponse("", "UPDATE_FAILED", "Failed to update user");
 }
 
-// Product 관련 메서드들
-QJsonObject ProtocolController::handleProductList(const QJsonObject &parameters)
-{
-    Q_UNUSED(parameters)
-
-    QVector<Product> products = productService_->getAllProducts();
-    QJsonArray productArray = vectorToJsonArray(products);
-
-    QJsonObject responseData;
-    responseData["products"] = productArray;
-    responseData["count"] = productArray.size();
-
-    return createResponse("", "success", 200, "Products retrieved successfully", responseData);
-}
-
-QJsonObject ProtocolController::handleProductGet(const QJsonObject &parameters)
-{
-    id_t productId = parameters.value("productId").toInteger();
-
-    const Product* product = productService_->getProductById(productId);
-    if (product) {
-        return createResponse("", "success", 200, "Product found", productToJson(product));
-    }
-
-    return createErrorResponse("", "PRODUCT_NOT_FOUND", "Product not found");
-}
-
-QJsonObject ProtocolController::handleProductCreate(const QJsonObject &parameters)
-{
-    Product newProduct;
-    if (newProduct.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = productService_->createProduct(newProduct);
-        if (result == Ra_Success) {
-            return createResponse("", "success", 201, "Product created successfully", productToJson(&newProduct));
-        }
-    }
-
-    return createErrorResponse("", "PRODUCT_CREATION_FAILED", "Failed to create product");
-}
-
-QJsonObject ProtocolController::handleProductUpdate(const QJsonObject &parameters)
-{
-    Product product;
-    if (product.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = productService_->updateProduct(product);
-        if (result == Ra_Success) {
-            return createResponse("", "success", 200, "Product updated successfully", productToJson(&product));
-        }
-    }
-
-    return createErrorResponse("", "UPDATE_FAILED", "Failed to update product");
-}
-
-QJsonObject ProtocolController::handleProductDelete(const QJsonObject &parameters)
-{
-    id_t productId = parameters.value("productId").toInteger();
-
-    RaErrorCode result = productService_->deleteProduct(productId);
-    if (result == Ra_Success) {
-        return createResponse("", "success", 200, "Product deleted successfully");
-    }
-
-    return createErrorResponse("", "DELETE_FAILED", "Failed to delete product");
-}
-
-// Order 관련 메서드들
-QJsonObject ProtocolController::handleOrderCreate(const QJsonObject &parameters)
-{
-    Order newOrder;
-    if (newOrder.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService_->createOrder(newOrder);
-        if (result == Ra_Success) {
-            return createResponse("", "success", 201, "Order created successfully", orderToJson(&newOrder));
-        }
-    }
-
-    return createErrorResponse("", "ORDER_CREATION_FAILED", "Failed to create order");
-}
-
-QJsonObject ProtocolController::handleOrderGet(const QJsonObject &parameters)
-{
-    id_t orderId = parameters.value("orderId").toInteger();
-
-    const Order* order = orderService_->getOrderById(orderId);
-    if (order) {
-        return createResponse("", "success", 200, "Order found", orderToJson(order));
-    }
-
-    return createErrorResponse("", "ORDER_NOT_FOUND", "Order not found");
-}
-
-QJsonObject ProtocolController::handleOrderList(const QJsonObject &parameters)
+// Plant 관련 메서드들
+QJsonObject ProtocolController::handlePlantList(const QJsonObject &parameters)
 {
     id_t userId = parameters.value("userId").toInteger();
 
-    QVector<Order> orders;
+    QVector<Plant> plants;
     if (userId > 0) {
-        orders = orderService_->getOrdersByUserId(userId);
+        plants = plantService_->getPlantsByUserId(userId);
     } else {
-        orders = orderService_->getAllOrders();
+        plants = plantService_->getAllPlants();
     }
 
-    QJsonArray orderArray = vectorToJsonArray(orders);
+    QJsonArray plantArray = vectorToJsonArray(plants);
 
     QJsonObject responseData;
-    responseData["orders"] = orderArray;
-    responseData["count"] = orderArray.size();
+    responseData["plants"] = plantArray;
+    responseData["count"] = plantArray.size();
 
-    return createResponse("", "success", 200, "Orders retrieved successfully", responseData);
+    return createResponse("", "success", 200, "Plants retrieved successfully", responseData);
 }
 
-QJsonObject ProtocolController::handleOrderUpdate(const QJsonObject &parameters)
+QJsonObject ProtocolController::handlePlantGet(const QJsonObject &parameters)
 {
-    Order order;
-    if (order.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService_->updateOrder(order);
+    id_t plantId = parameters.value("plantId").toInteger();
+
+    const Plant* plant = plantService_->getPlantById(plantId);
+    if (plant) {
+        return createResponse("", "success", 200, "Plant found", plantToJson(plant));
+    }
+
+    return createErrorResponse("", "PLANT_NOT_FOUND", "Plant not found");
+}
+
+QJsonObject ProtocolController::handlePlantCreate(const QJsonObject &parameters)
+{
+    Plant newPlant;
+    if (newPlant.fromJson(parameters) == Ra_Success) {
+        RaErrorCode result = plantService_->createPlant(newPlant);
         if (result == Ra_Success) {
-            return createResponse("", "success", 200, "Order updated successfully", orderToJson(&order));
+            return createResponse("", "success", 201, "Plant created successfully", plantToJson(&newPlant));
         }
     }
 
-    return createErrorResponse("", "UPDATE_FAILED", "Failed to update order");
+    return createErrorResponse("", "PLANT_CREATION_FAILED", "Failed to create plant");
 }
 
-// OrderItem 관련 메서드들
-QJsonObject ProtocolController::handleOrderItemAdd(const QJsonObject &parameters)
+QJsonObject ProtocolController::handlePlantUpdate(const QJsonObject &parameters)
 {
-    OrderItem newItem;
-    if (newItem.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService_->addOrderItem(newItem);
+    Plant plant;
+    if (plant.fromJson(parameters) == Ra_Success) {
+        RaErrorCode result = plantService_->updatePlant(plant);
         if (result == Ra_Success) {
-            return createResponse("", "success", 201, "Order item added successfully", orderItemToJson(&newItem));
+            return createResponse("", "success", 200, "Plant updated successfully", plantToJson(&plant));
         }
     }
 
-    return createErrorResponse("", "ORDERITEM_CREATION_FAILED", "Failed to add order item");
+    return createErrorResponse("", "UPDATE_FAILED", "Failed to update plant");
 }
 
-QJsonObject ProtocolController::handleOrderItemUpdate(const QJsonObject &parameters)
+QJsonObject ProtocolController::handlePlantDelete(const QJsonObject &parameters)
 {
-    OrderItem item;
-    if (item.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService_->updateOrderItem(item);
-        if (result == Ra_Success) {
-            return createResponse("", "success", 200, "Order item updated successfully", orderItemToJson(&item));
-        }
-    }
+    id_t plantId = parameters.value("plantId").toInteger();
 
-    return createErrorResponse("", "UPDATE_FAILED", "Failed to update order item");
-}
-
-QJsonObject ProtocolController::handleOrderItemRemove(const QJsonObject &parameters)
-{
-    id_t itemId = parameters.value("itemId").toInteger();
-
-    RaErrorCode result = orderService_->removeOrderItem(itemId);
+    RaErrorCode result = plantService_->deletePlant(plantId);
     if (result == Ra_Success) {
-        return createResponse("", "success", 200, "Order item removed successfully");
+        return createResponse("", "success", 200, "Plant deleted successfully");
     }
 
-    return createErrorResponse("", "DELETE_FAILED", "Failed to remove order item");
+    return createErrorResponse("", "DELETE_FAILED", "Failed to delete plant");
+}
+
+QJsonObject ProtocolController::handlePlantSensorUpdate(const QJsonObject &parameters)
+{
+    id_t plantId = parameters.value("plantId").toInteger();
+    int humidity = parameters.value("humidity").toInt();
+    double temperature = parameters.value("temperature").toDouble();
+
+    RaErrorCode result = plantService_->updateSensorData(plantId, humidity, temperature);
+    if (result == Ra_Success) {
+        const Plant* updatedPlant = plantService_->getPlantById(plantId);
+        return createResponse("", "success", 200, "Sensor data updated successfully", plantToJson(updatedPlant));
+    }
+
+    return createErrorResponse("", "SENSOR_UPDATE_FAILED", "Failed to update sensor data");
+}
+
+// Post 관련 메서드들
+QJsonObject ProtocolController::handlePostList(const QJsonObject &parameters)
+{
+    id_t authorId = parameters.value("authorId").toInteger();
+    int page = parameters.value("page").toInt();
+    int pageSize = parameters.value("pageSize").toInt();
+    QString sortTypeStr = parameters.value("sortType").toString();
+
+    // 기본값 설정
+    if (pageSize <= 0 || pageSize > 100) pageSize = 20; // 최대 100개로 제한
+    if (page <= 0) page = 1;
+
+    // 정렬 타입 변환
+    PostSortType sortType = PostSortType::CreatedDate_Desc;
+    if (sortTypeStr == "created_asc") sortType = PostSortType::CreatedDate_Asc;
+    else if (sortTypeStr == "updated_desc") sortType = PostSortType::UpdatedDate_Desc;
+    else if (sortTypeStr == "updated_asc") sortType = PostSortType::UpdatedDate_Asc;
+    else if (sortTypeStr == "title_asc") sortType = PostSortType::Title_Asc;
+    else if (sortTypeStr == "title_desc") sortType = PostSortType::Title_Desc;
+
+    QVector<Post> posts;
+    int totalCount = 0;
+
+    if (authorId > 0) {
+        // 특정 작성자의 게시글
+        posts = postService_->getPostsByAuthorIdSorted(authorId, sortType);
+        totalCount = posts.size();
+
+        // 페이징 처리
+        int startIndex = (page - 1) * pageSize;
+        int endIndex = qMin(startIndex + pageSize, posts.size());
+        if (startIndex < posts.size()) {
+            posts = posts.mid(startIndex, endIndex - startIndex);
+        } else {
+            posts.clear();
+        }
+    } else {
+        // 전체 게시글 (페이징 적용)
+        totalCount = postService_->getTotalPostCount();
+        posts = postService_->getPostsPaginated(page, pageSize, sortType);
+    }
+
+    QJsonArray postArray = vectorToJsonArray(posts);
+
+    QJsonObject responseData;
+    responseData["posts"] = postArray;
+    responseData["count"] = postArray.size();
+    responseData["totalCount"] = totalCount;
+    responseData["page"] = page;
+    responseData["pageSize"] = pageSize;
+    responseData["totalPages"] = (totalCount + pageSize - 1) / pageSize;
+
+    return createResponse("", "success", 200, "Posts retrieved successfully", responseData);
+}
+
+QJsonObject ProtocolController::handlePostGet(const QJsonObject &parameters)
+{
+    id_t postId = parameters.value("postId").toInteger();
+
+    const Post* post = postService_->getPostById(postId);
+    if (post) {
+        return createResponse("", "success", 200, "Post found", postToJson(post));
+    }
+
+    return createErrorResponse("", "POST_NOT_FOUND", "Post not found");
+}
+
+QJsonObject ProtocolController::handlePostCreate(const QJsonObject &parameters, const QString &clientId)
+{
+    // 인증 확인
+    if (!checkAuthentication(clientId)) {
+        return createErrorResponse("", "AUTHENTICATION_REQUIRED", "User not authenticated");
+    }
+
+    Post newPost;
+    if (newPost.fromJson(parameters) == Ra_Success) {
+        // 작성자 ID가 현재 로그인된 사용자와 일치하는지 확인
+        id_t currentUserId = getCurrentUserId(clientId);
+        if (newPost.getUserId() != currentUserId) {
+            newPost.setUserId(currentUserId); // 현재 사용자로 강제 설정
+        }
+
+        RaErrorCode result = postService_->createPost(newPost);
+        if (result == Ra_Success) {
+            return createResponse("", "success", 201, "Post created successfully", postToJson(&newPost));
+        }
+    }
+
+    return createErrorResponse("", "POST_CREATION_FAILED", "Failed to create post");
+}
+
+QJsonObject ProtocolController::handlePostUpdate(const QJsonObject &parameters, const QString &clientId)
+{
+    if (!checkAuthentication(clientId)) {
+        return createErrorResponse("", "AUTHENTICATION_REQUIRED", "User not authenticated");
+    }
+
+    Post post;
+    if (post.fromJson(parameters) == Ra_Success) {
+        // 기존 게시글 확인
+        const Post* existingPost = postService_->getPostById(post.getId());
+        if (!existingPost) {
+            return createErrorResponse("", "POST_NOT_FOUND", "Post not found");
+        }
+
+        // 작성자 본인만 수정 가능
+        id_t currentUserId = getCurrentUserId(clientId);
+        if (existingPost->getUserId() != currentUserId) {
+            return createErrorResponse("", "ACCESS_DENIED", "Only author can update the post");
+        }
+
+        RaErrorCode result = postService_->updatePost(post);
+        if (result == Ra_Success) {
+            return createResponse("", "success", 200, "Post updated successfully", postToJson(&post));
+        }
+    }
+
+    return createErrorResponse("", "UPDATE_FAILED", "Failed to update post");
+}
+
+QJsonObject ProtocolController::handlePostDelete(const QJsonObject &parameters, const QString &clientId)
+{
+    if (!checkAuthentication(clientId)) {
+        return createErrorResponse("", "AUTHENTICATION_REQUIRED", "User not authenticated");
+    }
+
+    id_t postId = parameters.value("postId").toInteger();
+
+    // 기존 게시글 확인
+    const Post* existingPost = postService_->getPostById(postId);
+    if (!existingPost) {
+        return createErrorResponse("", "POST_NOT_FOUND", "Post not found");
+    }
+
+    // 작성자 본인만 삭제 가능
+    id_t currentUserId = getCurrentUserId(clientId);
+    if (existingPost->getUserId() != currentUserId) {
+        return createErrorResponse("", "ACCESS_DENIED", "Only author can delete the post");
+    }
+
+    RaErrorCode result = postService_->deletePost(postId);
+    if (result == Ra_Success) {
+        return createResponse("", "success", 200, "Post deleted successfully");
+    }
+
+    return createErrorResponse("", "DELETE_FAILED", "Failed to delete post");
+}
+
+QJsonObject ProtocolController::handlePostSearch(const QJsonObject &parameters)
+{
+    QString keyword = parameters.value("keyword").toString();
+    QString searchType = parameters.value("searchType").toString(); // "title", "content", "both"
+
+    if (keyword.isEmpty()) {
+        return createErrorResponse("", "INVALID_PARAMETER", "Keyword is required");
+    }
+
+    QVector<Post> posts;
+
+    if (searchType == "title") {
+        posts = postService_->searchPostsByTitle(keyword);
+    } else if (searchType == "content") {
+        posts = postService_->searchPostsByContent(keyword);
+    } else {
+        // 기본값: 제목과 내용 모두 검색
+        posts = postService_->searchPostsByTitleOrContent(keyword);
+    }
+
+    QJsonArray postArray = vectorToJsonArray(posts);
+
+    QJsonObject responseData;
+    responseData["posts"] = postArray;
+    responseData["count"] = postArray.size();
+    responseData["keyword"] = keyword;
+    responseData["searchType"] = searchType.isEmpty() ? "both" : searchType;
+
+    return createResponse("", "success", 200, "Search completed successfully", responseData);
+}
+
+// Post 관련 데이터 변환 유틸리티
+QJsonObject ProtocolController::postToJson(const Post* post)
+{
+    if (!post) return QJsonObject();
+
+    QJsonObject jsonObj = post->toJson();
+
+    // 작성자 정보 추가
+    User *author = userService_->getUserById(post->getUserId());
+    if (author) {
+        jsonObj.insert("userName", author->getName());
+    }
+
+    return jsonObj;
+}
+
+QJsonArray ProtocolController::vectorToJsonArray(const QVector<Post>& posts)
+{
+    QJsonArray array;
+    for (const Post& post : posts) {
+        QJsonObject postObj = post.toJson();
+
+        // 각 게시글에 작성자 이름 추가
+        User *author = userService_->getUserById(post.getUserId());
+        if (author) {
+            postObj.insert("authorName", author->getName());
+        }
+
+        array.append(postObj);
+    }
+    return array;
 }
 
 // Chat 관련 메서드들
@@ -650,19 +781,9 @@ QJsonObject ProtocolController::userToJson(const User* user)
     return json;
 }
 
-QJsonObject ProtocolController::productToJson(const Product* product)
+QJsonObject ProtocolController::plantToJson(const Plant* plant)
 {
-    return product ? product->toJson() : QJsonObject();
-}
-
-QJsonObject ProtocolController::orderToJson(const Order* order)
-{
-    return order ? order->toJson() : QJsonObject();
-}
-
-QJsonObject ProtocolController::orderItemToJson(const OrderItem* orderItem)
-{
-    return orderItem ? orderItem->toJson() : QJsonObject();
+    return plant ? plant->toJson() : QJsonObject();
 }
 
 QJsonObject ProtocolController::chatRoomToJson(const ChatRoom* chatRoom)
@@ -679,11 +800,11 @@ QJsonObject ProtocolController::chatUnitToJson(const ChatUnit* chatUnit)
     return jsonObj;
 }
 
-QJsonArray ProtocolController::vectorToJsonArray(const QVector<Product>& products)
+QJsonArray ProtocolController::vectorToJsonArray(const QVector<Plant>& plants)
 {
     QJsonArray array;
-    for (const Product& product : products) {
-        array.append(product.toJson());
+    for (const Plant& plant : plants) {
+        array.append(plant.toJson());
     }
     return array;
 }
@@ -693,15 +814,6 @@ QJsonArray ProtocolController::vectorToJsonArray(const QVector<ChatRoom>& rooms)
     QJsonArray array;
     for (const ChatRoom& room : rooms) {
         array.append(room.toJson());
-    }
-    return array;
-}
-
-QJsonArray ProtocolController::vectorToJsonArray(const QVector<Order>& orders)
-{
-    QJsonArray array;
-    for (const Order& order : orders) {
-        array.append(order.toJson());
     }
     return array;
 }

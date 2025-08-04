@@ -1,8 +1,8 @@
 #ifndef CHATROOMJSONREPO_H
 #define CHATROOMJSONREPO_H
 #include "JsonRepo.h"
-#include "models/entity/chatlog/ChatRoom.h"
-#include "models/entity/chatlog/ChatUnit.h"
+#include "models/entity/ChatRoom.h"
+#include "models/entity/ChatUnit.h"
 #include "utils/CustomErrorCodes.h"
 
 

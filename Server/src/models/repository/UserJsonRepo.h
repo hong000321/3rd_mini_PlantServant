@@ -2,7 +2,7 @@
 #define USERJSONREPO_H
 
 #include "JsonRepo.h"
-#include "models/Entity/user/User.h"
+#include "models/Entity/User.h"
 
 class UserJsonRepo : public JsonRepo<User> {
 private:

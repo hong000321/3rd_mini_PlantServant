@@ -1,7 +1,6 @@
 #include "ServerMainWindow.h"
 #include "ui_server_main_window.h"
 #include "views/EnrollAdminWindow.h"
-#include "views/TestWindow.h"
 #include <QDebug>
 #include <QMessageBox>
 #include <QDateTime>
@@ -19,11 +18,10 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     config_ = ServerConfig::getInstance();
     ui_->setupUi(this);
 
-    // UI 초기화
+    // UI 초기화 (product → plant로 변경)
     ui_->lineEdit_user->setText(config_->userFilePath);
-    ui_->lineEdit_product->setText(config_->productFilePath);
-    ui_->lineEdit_order->setText(config_->orderFilePath);
-    ui_->lineEdit_orderItem->setText(config_->orderItemFilePath);
+    ui_->lineEdit_plant->setText(config_->plantFilePath);
+    ui_->lineEdit_post->setText(config_->postFilePath);
     ui_->lineEdit_chatUnit->setText(config_->chatFilePath);
     ui_->lineEdit_chatRoom->setText(config_->chatRoomFilePath);
     ui_->lineEdit_log->setText(config_->logFilePath);
@@ -56,9 +54,8 @@ void ServerMainWindow::initializeServers()
 
     bool initSuccess = protocolController_->initialize(
         config_->userFilePath,
-        config_->productFilePath,
-        config_->orderFilePath,
-        config_->orderItemFilePath,
+        config_->plantFilePath,
+        config_->postFilePath,
         config_->chatRoomFilePath,
         config_->chatFilePath
         );
@@ -66,9 +63,8 @@ void ServerMainWindow::initializeServers()
     QString currentPath = QDir::currentPath();
     qDebug() << "현재 작업 디렉토리:" << currentPath;
     qDebug() << config_->userFilePath << Qt::endl <<
-        config_->productFilePath << Qt::endl <<
-        config_->orderFilePath << Qt::endl <<
-        config_->orderItemFilePath << Qt::endl <<
+        config_->plantFilePath << Qt::endl <<
+        config_->postFilePath << Qt::endl <<
         config_->chatRoomFilePath << Qt::endl <<
         config_->chatFilePath;
 
@@ -306,4 +302,3 @@ void ServerMainWindow::on_Run_pushButton_clicked()
         ui_->Port_lineEdit_2->setEnabled(true);
     }
 }
-

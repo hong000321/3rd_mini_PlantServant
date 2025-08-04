@@ -2,7 +2,7 @@
 #ifndef CHATJSONREPO_H
 #define CHATJSONREPO_H
 #include "JsonRepo.h"
-#include "models/entity/chatlog/ChatUnit.h"
+#include "models/entity/ChatUnit.h"
 
 class ChatJsonRepo : public JsonRepo<ChatUnit> {
 private:

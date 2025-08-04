@@ -11,8 +11,8 @@
 
 // 서비스 클래스들 include
 #include "models/service/UserManageService.h"
-#include "models/service/ProductManageService.h"
-#include "models/service/OrderManageService.h"
+#include "models/service/PlantManageService.h"
+#include "models/service/PostManageService.h"
 #include "models/service/ChatManageService.h"
 #include "models/service/loginService.h"
 
@@ -30,10 +30,10 @@ public:
     // SocketServer 설정
     void setSocketServer(SocketServer *server) { socketServer_ = server; }
 
-    // 초기화
-    bool initialize(const QString& userFilePath, const QString& productFilePath,
-                    const QString& orderFilePath, const QString& orderItemFilePath,
-                    const QString& chatRoomFilePath, const QString& chatFilePath);
+    // 초기화 (post 관련 매개변수 추가)
+    bool initialize(const QString& userFilePath, const QString& plantFilePath,
+                    const QString& postFilePath, const QString& chatRoomFilePath,
+                    const QString& chatFilePath);
 
     // 메인 처리 메서드
     QJsonObject processMessage(const QJsonObject &message);
@@ -50,15 +50,15 @@ signals:
     void errorOccurred(const QString &error);
 
 private:
-    // 서비스 인스턴스들
+    // 서비스 인스턴스들 (PostManageService 추가)
     UserManageService* userService_;
-    ProductManageService* productService_;
-    OrderManageService* orderService_;
+    PlantManageService* plantService_;
+    PostManageService* postService_;
     ChatManageService* chatService_;
     LoginService* loginService_;
     SocketServer* socketServer_;
 
-    // 세션 관리s
+    // 세션 관리
     QMap<QString, QString> clientSessions_; // clientId -> sessionId
 
     // 메시지 처리 메서드들
@@ -76,23 +76,21 @@ private:
     QJsonObject handleUserGet(const QJsonObject &parameters);
     QJsonObject handleUserUpdate(const QJsonObject &parameters);
 
-    // Product 관련 처리 (ProductManageService 사용)
-    QJsonObject handleProductList(const QJsonObject &parameters);
-    QJsonObject handleProductGet(const QJsonObject &parameters);
-    QJsonObject handleProductCreate(const QJsonObject &parameters);
-    QJsonObject handleProductUpdate(const QJsonObject &parameters);
-    QJsonObject handleProductDelete(const QJsonObject &parameters);
+    // Plant 관련 처리 (PlantManageService 사용)
+    QJsonObject handlePlantList(const QJsonObject &parameters);
+    QJsonObject handlePlantGet(const QJsonObject &parameters);
+    QJsonObject handlePlantCreate(const QJsonObject &parameters);
+    QJsonObject handlePlantUpdate(const QJsonObject &parameters);
+    QJsonObject handlePlantDelete(const QJsonObject &parameters);
+    QJsonObject handlePlantSensorUpdate(const QJsonObject &parameters);
 
-    // Order 관련 처리 (OrderManageService 사용)
-    QJsonObject handleOrderCreate(const QJsonObject &parameters);
-    QJsonObject handleOrderGet(const QJsonObject &parameters);
-    QJsonObject handleOrderList(const QJsonObject &parameters);
-    QJsonObject handleOrderUpdate(const QJsonObject &parameters);
-
-    // OrderItem 관련 처리
-    QJsonObject handleOrderItemAdd(const QJsonObject &parameters);
-    QJsonObject handleOrderItemUpdate(const QJsonObject &parameters);
-    QJsonObject handleOrderItemRemove(const QJsonObject &parameters);
+    // Post 관련 처리 (PostManageService 사용)
+    QJsonObject handlePostList(const QJsonObject &parameters);
+    QJsonObject handlePostGet(const QJsonObject &parameters);
+    QJsonObject handlePostCreate(const QJsonObject &parameters, const QString &clientId);
+    QJsonObject handlePostUpdate(const QJsonObject &parameters, const QString &clientId);
+    QJsonObject handlePostDelete(const QJsonObject &parameters, const QString &clientId);
+    QJsonObject handlePostSearch(const QJsonObject &parameters);
 
     // Chat 관련 처리 (ChatManageService 사용)
     QJsonObject handleChatRoomCreate(const QJsonObject &parameters);
@@ -112,16 +110,15 @@ private:
     QString generateId();
     id_t getCurrentUserId(const QString &clientId);
 
-    // 데이터 변환 유틸리티
+    // 데이터 변환 유틸리티 (Post 관련 추가)
     QJsonObject userToJson(const User* user);
-    QJsonObject productToJson(const Product* product);
-    QJsonObject orderToJson(const Order* order);
-    QJsonObject orderItemToJson(const OrderItem* orderItem);
+    QJsonObject plantToJson(const Plant* plant);
+    QJsonObject postToJson(const Post* post);
     QJsonObject chatRoomToJson(const ChatRoom* chatRoom);
     QJsonObject chatUnitToJson(const ChatUnit* chatUnit);
-    QJsonArray vectorToJsonArray(const QVector<Product>& products);
+    QJsonArray vectorToJsonArray(const QVector<Plant>& plants);
+    QJsonArray vectorToJsonArray(const QVector<Post>& posts);
     QJsonArray vectorToJsonArray(const QVector<ChatRoom>& products);
-    QJsonArray vectorToJsonArray(const QVector<Order>& orders);
 };
 
 #endif // PROTOCOLCONTROLLER_H

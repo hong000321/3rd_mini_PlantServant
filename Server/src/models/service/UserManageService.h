@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 #include <QVector>
-#include "models/entity/user/User.h"
+#include "models/entity/User.h"
 #include "models/repository/UserJsonRepo.h"
 #include "utils/CustomErrorCodes.h"
 

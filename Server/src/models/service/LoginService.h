@@ -5,7 +5,7 @@
 #include <QString>
 #include <QMap>
 #include <QDateTime>
-#include "models/entity/user/User.h"
+#include "models/entity/User.h"
 #include "UserManageService.h"
 #include "utils/CustomErrorCodes.h"
 

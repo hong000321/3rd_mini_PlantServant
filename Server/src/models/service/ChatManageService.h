@@ -5,8 +5,8 @@
 #include <QString>
 #include <QVector>
 #include <QDateTime>
-#include "models/entity/chatlog/ChatRoom.h"
-#include "models/entity/chatlog/ChatUnit.h"
+#include "models/entity/ChatRoom.h"
+#include "models/entity/ChatUnit.h"
 #include "models/repository/ChatRoomJsonRepo.h"
 #include "models/repository/ChatJsonRepo.h"
 #include "utils/CustomErrorCodes.h"

@@ -29,26 +29,23 @@ SOURCES += \
     src/controllers/ProtocolController.cpp \
     src/controllers/SocketServer.cpp \
     src/models/entity/Entity.cpp \
+    src/models/entity/Plant.cpp \
+    src/models/entity/Post.cpp \
     src/models/repository/ChatJsonRepo.cpp \
     src/models/repository/ChatRoomJsonRepo.cpp \
-    src/models/repository/OrderItemJsonRepo.cpp \
-    src/models/repository/OrderJsonRepo.cpp \
-    src/models/repository/ProductJsonRepo.cpp \
+    src/models/repository/PlantJsonRepo.cpp \
+    src/models/repository/PostJsonRepo.cpp \
     src/models/service/ChatManageService.cpp \
     src/models/service/LoginService.cpp \
-    src/models/service/OrderManageService.cpp \
-    src/models/service/ProductManageService.cpp \
+    src/models/service/PlantManageService.cpp \
+    src/models/service/PostManageService.cpp \
     src/models/service/UserManageService.cpp \
     src/views/EnrollAdminWindow.cpp \
     src/views/ServerMainWindow.cpp \
-    src/models/entity/chatlog/ChatRoom.cpp \
-    src/models/entity/chatlog/ChatUnit.cpp \
-    src/models/entity/order/Order.cpp \
-    src/models/entity/order/OrderItem.cpp \
-    src/models/entity/product/Product.cpp \
-    src/models/entity/user/User.cpp \
-    src/models/repository/UserJsonRepo.cpp \
-    src/views/TestWindow.cpp
+    src/models/entity/ChatRoom.cpp \
+    src/models/entity/ChatUnit.cpp \
+    src/models/entity/User.cpp \
+    src/models/repository/UserJsonRepo.cpp
 
 
 HEADERS += \
@@ -57,35 +54,31 @@ HEADERS += \
     src/controllers/ProtocolController.h \
     src/controllers/SocketServer.h \
     src/models/entity/Entity.h \
+    src/models/entity/Plant.h \
+    src/models/entity/Post.h \
     src/models/repository/ChatJsonRepo.h \
     src/models/repository/ChatRoomJsonRepo.h \
-    src/models/repository/OrderItemJsonRepo.h \
-    src/models/repository/OrderJsonRepo.h \
-    src/models/repository/ProductJsonRepo.h \
+    src/models/repository/PlantJsonRepo.h \
+    src/models/repository/PostJsonRepo.h \
     src/models/service/ChatManageService.h \
     src/models/service/LoginService.h \
-    src/models/service/OrderManageService.h \
-    src/models/service/ProductManageService.h \
+    src/models/service/PlantManageService.h \
+    src/models/service/PostManageService.h \
     src/models/service/UserManageService.h \
     src/views/EnrollAdminWindow.h \
     src/views/ServerMainWindow.h \
-    src/models/entity/chatlog/ChatRoom.h \
-    src/models/entity/chatlog/ChatUnit.h \
-    src/models/entity/order/Order.h \
-    src/models/entity/order/OrderItem.h \
-    src/models/entity/product/Product.h \
-    src/models/entity/user/User.h \
+    src/models/entity/ChatRoom.h \
+    src/models/entity/ChatUnit.h \
+    src/models/entity/User.h \
     src/models/repository/IRepository.h \
     src/models/repository/JsonRepo.h \
     src/models/repository/UserJsonRepo.h \
-    src/utils/CustomErrorCodes.h \
-    src/views/TestWindow.h
+    src/utils/CustomErrorCodes.h
 
 INCLUDEPATH += \
     $${SRC_DIR}
 
 FORMS += \
-    src/views/test_window.ui \
     src/views/enroll_admin_window.ui \
     src/views/server_main_window.ui
 

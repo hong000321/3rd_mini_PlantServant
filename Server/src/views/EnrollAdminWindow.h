@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QMessageBox>
 #include "controllers/ProtocolController.h"
-#include "models/entity/user/User.h"
+#include "models/entity/User.h"
 
 namespace Ui {
 class EnrollAdminWindow;
