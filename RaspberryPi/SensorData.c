@@ -8,8 +8,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <curl/curl.h> //HTTP 보내기 위한 libcurl 
-
+#include <curl/curl.h> //HTTP 보내기 위한 libcurl 라이브러리
 
 #define TCP_PORT 54321 //포트 54321
 
@@ -44,105 +43,6 @@ static const int T1_T0_MSB = 0x35;
 
 static const int TEMP_OUT_L = 0x2A;
 static const int TEMP_OUT_H = 0x2B;
-
-// 온도와 습도를 위한 함수
-void getTemperature(int fd, double *temperature, double *humidity);
-
-int main(int argc, char **argv)
-{
-    int i2c_fd; //온습도센서 fd
-    double temperature, humidity;
-
-    //I2C 장치 파일을 오픈
-    if((i2c_fd = open(I2C_DEV, O_RDWR)) < 0) {
-        perror("Unable to open i2c device");
-        return 1;
-    }
-
-    //I2C 장치를 슬레이브(slave) 모드로 HTS221를 설정
-    if(ioctl(i2c_fd, I2C_SLAVE, HTS221_ID) < 0) {
-        perror("Unable to configure i2c slave device");
-        close(i2c_fd);
-        return 1;
-    }
-
-    // for(int i = 0; i < 10; i++) {
-        //  HTS221 장치 초기화
-        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x00);
-        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x84);
-        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG2, 0x01);
-
-        // 온도와 습도값 획득
-        getTemperature(i2c_fd, &temperature, &humidity);
-
-        // 계산된 값을 출력
-        // printf("Temperature(from HTS221) = %.2f°C\n", temperature);
-        // printf("Humidity = %.0f%% rH\n", humidity);
-
-	//delay(1000); 			// 다음 측정하기 전에 1초(1000밀리초)간 대기
-    // }
-
-    // 사용이 끝난 장치를 정리
-    wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x00);
-
-    close(i2c_fd); //사용끝난 온습도 센서 fd close
-
-    // int rasp_socket; //소켓 
-    // struct sockaddr_in servaddr; // 서버 구조체
-    char sensor_json[128]; //json에 sensor값 담을거임
-
-    // if (argc < 2){
-    //     printf("Usage: %s IP_ADRESS\n", argv[0]);
-    //     return -1;
-    // }
-
-    // //소켓 생성
-    // if ( rasp_socket = socket (AF_INET, SOCK_STREAM, 0) < 0 ){
-    //     perror("socket(): ");
-    //     return -1;
-    // }
-
-    // //서버 주소 지정
-    // memset(&servaddr, 0, sizeof(servaddr));
-    // servaddr.sin_family = AF_INET;
-    // inet_pton(AF_INET, argv[1], &(servaddr.sin_addr.s_addr));
-    // servaddr.sin_port = htons(TCP_PORT); // 포트번호 54321
-
-    // //지정 주소로 접속
-    // if (connect (rasp_socket, (struct sockaddr *)&servaddr, sizeof(servaddr)) < 0){
-    //     perror("connect():");
-    //     return -1;
-    // }
-    
-    //sensor_data_json
-    snprintf(sensor_json, sizeof(sensor_json),
-             "{\"temperature\": %.2f, \"humidity\": %.0f}", temperature, humidity);
-
-    //curl 초기화
-    CURL *curl = curl_easy_init();
-
-    //send to server
-    if (curl){
-
-        CURLcode res;
-        //서버ip:포트 열고 들어가기
-        curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.2.212:54321/rasp/sensor");
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, sensor_json);
-
-        struct curl_slist *headers = NULL;
-        headers = curl_slist_append(headers, "Content-Type: application/json"); //이거 정배래요
-        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
-        res = curl_easy_perform(curl);
-        if (res != CURLE_OK) 
-            fprintf(stderr, "curl failed: %s", curl_easy_strerror(res));
-
-        curl_slist_free_all(headers);
-        curl_easy_cleanup(curl);
-    }
-    //받는 프로토콜 라즈베리파이 터미널에서도 띄우긴 해야될 것 같은디 흠터레스팅
-    return 0;
-}
 
 // 온도와 습도를 가져오기 위한 함수
 void getTemperature(int fd, double *temperature, double *humidity)
@@ -221,4 +121,70 @@ void getTemperature(int fd, double *temperature, double *humidity)
 
     /* 주변의 습도 계산 */
     *humidity = (h_gradient_m * s_h_t_out) + h_intercept_c;
+}
+
+int main(int argc, char **argv)
+{
+
+    while (1){
+        int i2c_fd; //온습도센서 fd
+        double temperature, humidity;
+
+        //I2C 장치 파일을 오픈
+        if((i2c_fd = open(I2C_DEV, O_RDWR)) < 0) {
+            perror("Unable to open i2c device");
+            return 1;
+        }
+
+        //I2C 장치를 슬레이브(slave) 모드로 HTS221를 설정
+        if(ioctl(i2c_fd, I2C_SLAVE, HTS221_ID) < 0) {
+            perror("Unable to configure i2c slave device");
+            close(i2c_fd);
+            return 1;
+        }
+
+   
+        //  HTS221 장치 초기화
+        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x00);
+        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x84);
+        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG2, 0x01);
+
+        // 온도와 습도값 획득
+        getTemperature(i2c_fd, &temperature, &humidity);
+
+    
+        // 사용이 끝난 장치를 정리
+        wiringPiI2CWriteReg8(i2c_fd, CTRL_REG1, 0x00);
+
+        close(i2c_fd); //사용끝난 온습도 센서 fd close
+        
+        //sensor_data_json : sensor 값 담음
+        char sensor_json[128]; 
+        snprintf(sensor_json, sizeof(sensor_json),
+                "{\"temperature\": %.2f, \"humidity\": %.0f}", temperature, humidity);
+
+        //curl 초기화 및 전송
+        CURL *curl = curl_easy_init();
+        if (curl){
+
+            CURLcode res;
+            //서버ip:포트 열고 들어가기
+            curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.2.212:54321/rasp/sensor");
+            curl_easy_setopt(curl, CURLOPT_POSTFIELDS, sensor_json);
+
+            struct curl_slist *headers = NULL;
+            headers = curl_slist_append(headers, "Content-Type: application/json"); //이거 정배래요
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+            res = curl_easy_perform(curl);
+            if (res != CURLE_OK) 
+                fprintf(stderr, "curl failed: %s", curl_easy_strerror(res));
+
+            curl_slist_free_all(headers);
+            curl_easy_cleanup(curl);
+        }
+        sleep(10); //10초마다 한번
+    }
+
+    return 0;
 }
