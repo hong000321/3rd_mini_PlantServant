@@ -137,8 +137,9 @@ bool ServerMainWindow::startServers()
     logMessage(QString("🚀 서버들 시작 시도... %1").arg(ipAddress));
 
     // JSON 서버 시작 (5105 포트)
-    if (!socketServer_->startServer(address, static_cast<quint16>(ui_->Port_lineEdit_2->text().toInt()))) {
-        logMessage("❌ JSON 서버 시작 실패 (포트 5105)");
+    quint16 port = static_cast<quint16>(ui_->Port_lineEdit_2->text().toInt());
+    if (!socketServer_->startServer(address, port)) {
+        logMessage(QString("❌ JSON 서버 시작 실패 (포트 %1)").arg(port));
         return false;
     }
 

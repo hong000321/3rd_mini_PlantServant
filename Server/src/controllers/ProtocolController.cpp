@@ -435,8 +435,10 @@ QJsonObject ProtocolController::handlePostGet(const QJsonObject &parameters)
 
     const Post* post = postService_->getPostById(postId);
     if (post) {
+        qDebug() << "DEBUG :: ✅Post Found!!!";
         return createResponse("", "success", 200, "Post found", postToJson(post));
     }
+    qDebug() << "DEBUG :: ❌Post Not Found!!!";
 
     return createErrorResponse("", "POST_NOT_FOUND", "Post not found");
 }
@@ -564,6 +566,16 @@ QJsonObject ProtocolController::postToJson(const Post* post)
     User *author = userService_->getUserById(post->getUserId());
     if (author) {
         jsonObj.insert("userName", author->getName());
+    }
+
+    // 이미지 데이터 추가
+    if (!post->getImagePath().isEmpty()) {
+        QString imageBase64 = postService_->getPostImageAsBase64(post->getId());
+        if (!imageBase64.isEmpty()) {
+            jsonObj.insert("imageData", imageBase64);
+            qint64 imageSize = postService_->getImageFileSize(post->getImagePath());
+            jsonObj.insert("imageSize", imageSize);
+        }
     }
 
     return jsonObj;
