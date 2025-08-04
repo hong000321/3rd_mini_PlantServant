@@ -6,6 +6,7 @@ ClientMainWindow::ClientMainWindow(QWidget *parent)
     , ui(new Ui::ClientMainWindow)
 {
     ui->setupUi(this);
+    ui->stackedWidget->setCurrentWidget(ui->page_gallery);
 
 }
 

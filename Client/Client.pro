@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,29 +9,36 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    controller/ClientSocket.cpp \
+    controllers/ClientSocket.cpp \
     main.cpp \
-    model/Chat.cpp \
-    model/Plant.cpp \
-    model/Post.cpp \
-    model/User.cpp \
-    view/ClientMainWindow.cpp
+    models/entity/ChatRoom.cpp \
+    models/entity/ChatUnit.cpp \
+    models/entity/Plant.cpp \
+    models/entity/Post.cpp \
+    models/entity/User.cpp \
+    views/ClientMainWindow.cpp
 
 HEADERS += \
-    controller/ClientSocket.h \
-    model/Chat.h \
-    model/Plant.h \
-    model/Post.h \
-    model/User.h \
-    view/ClientMainWindow.h
+    controllers/ClientSocket.h \
+    models/entity/ChatRoom.h \
+    models/entity/ChatUnit.h \
+    models/entity/Plant.h \
+    models/entity/Post.h \
+    models/entity/User.h \
+    views/ClientMainWindow.h \
+    views/JoinMemberMainWindow.h \
+    utils/CustomErrorCodes.h
+
 
 INCLUDEPATH += \
-    view \
-    model \
-    controller
+    views \
+    models \
+    controllers
 
 FORMS += \
-    view/ClientMainWindow.ui
+    views/ClientMainWindow.ui \
+    views/JoinMemberMainWindow.ui \
+    views/LoginMainWindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
