@@ -1,6 +1,7 @@
 #include "ServerMainWindow.h"
 #include "ui_server_main_window.h"
 #include "views/EnrollAdminWindow.h"
+
 #include <QDebug>
 #include <QMessageBox>
 #include <QDateTime>
@@ -12,6 +13,7 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     , ui_(new Ui::ServerMainWindow)
     , socketServer_(nullptr)
     , protocolController_(nullptr)
+    , restServer_(nullptr)
     , statusTimer_(new QTimer(this))
     , isJsonServerRunning_(false)
 {
@@ -59,6 +61,8 @@ void ServerMainWindow::initializeServers()
         config_->chatRoomFilePath,
         config_->chatFilePath
         );
+
+    restServer_ = new HttpRestServer(this);
 
     QString currentPath = QDir::currentPath();
     qDebug() << "현재 작업 디렉토리:" << currentPath;
@@ -137,6 +141,10 @@ bool ServerMainWindow::startServers()
         logMessage("❌ JSON 서버 시작 실패 (포트 5105)");
         return false;
     }
+
+    // HTTP REST Server 시작 8080포트
+    restServer_->start(8080);
+
     return true;
 }
 

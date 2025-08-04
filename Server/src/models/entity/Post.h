@@ -10,14 +10,15 @@ private:
     id_t postId_;
     QString title_;
     QString content_;
+    QString imagePath_;
     id_t userId_;
     QDateTime createdAt_;
     QDateTime updatedAt_;
 
 public:
     Post() = default;
-    Post(const QString& title, const QString& content, id_t userId)
-        : title_(title), content_(content), userId_(userId) {
+    Post(const QString& title, const QString& content, id_t userId, QString imagePath)
+        : title_(title), content_(content), imagePath_(imagePath), userId_(userId){
         postId_ = -1;
         createdAt_ = QDateTime::currentDateTime();
         updatedAt_ = QDateTime::currentDateTime();
@@ -32,6 +33,7 @@ public:
     id_t getId() const override;
     QString getTitle() const;
     QString getContent() const;
+    QString getImagePath() const;
     id_t getUserId() const;
     QDateTime getCreatedAt() const;
     QDateTime getUpdatedAt() const;
@@ -40,6 +42,7 @@ public:
     void setId(id_t id) override;
     RaErrorCode setTitle(const QString& title);
     RaErrorCode setContent(const QString& content);
+    RaErrorCode setImagePath(const QString& imagePath);
     RaErrorCode setUserId(id_t userId);
     RaErrorCode updateContent(const QString& newTitle, const QString& newContent);
 
