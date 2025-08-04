@@ -686,7 +686,10 @@ QJsonObject ProtocolController::handleChatHistory(const QJsonObject &parameters)
 
         QJsonArray messageArray;
         for (const ChatUnit& chat : messages) {
-            messageArray.append(chat.toJson());
+            QJsonObject chatObj = chat.toJson();
+            User *user = userService_->getUserById(chat.getUserId());
+            chatObj.insert("userName",user->getName());
+            messageArray.append(chatObj);
         }
 
         QJsonObject responseData;
