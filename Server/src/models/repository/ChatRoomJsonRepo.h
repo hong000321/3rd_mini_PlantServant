@@ -8,10 +8,10 @@
 
 class ChatRoomJsonRepo : public JsonRepo<ChatRoom> {\
 protected:
-    using JsonRepo::vectorData;
-    using JsonRepo::filepath;
+    using JsonRepo::vectorData_;
+    using JsonRepo::filepath_;
 private:
-    static ChatRoomJsonRepo* instance;  // 싱글톤 인스턴스
+    static ChatRoomJsonRepo* instance_;  // 싱글톤 인스턴스
     ChatRoomJsonRepo();
     ChatRoomJsonRepo(const ChatRoomJsonRepo&) = delete;
     ChatRoomJsonRepo& operator=(const ChatRoomJsonRepo&) = delete;

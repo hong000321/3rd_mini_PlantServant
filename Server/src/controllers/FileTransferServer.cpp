@@ -7,78 +7,78 @@
 // FileTransferConnection 구현
 FileTransferConnection::FileTransferConnection(QTcpSocket *socket, QObject *parent)
     : QObject(parent)
-    , m_socket(socket)
-    , m_fileTransfer(nullptr)
+    , socket_(socket)
+    , fileTransfer_(nullptr)
 {
     generateConnectionId();
-    m_socket->setParent(this);
+    socket_->setParent(this);
 
-    connect(m_socket, &QTcpSocket::readyRead, this, &FileTransferConnection::onReadyRead);
-    connect(m_socket, &QTcpSocket::disconnected, this, &FileTransferConnection::onDisconnected);
-    connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred),
+    connect(socket_, &QTcpSocket::readyRead, this, &FileTransferConnection::onReadyRead);
+    connect(socket_, &QTcpSocket::disconnected, this, &FileTransferConnection::onDisconnected);
+    connect(socket_, QOverload<QAbstractSocket::SocketError>::of(&QAbstractSocket::errorOccurred),
             this, &FileTransferConnection::onSocketError);
 
     // FileTransfer 인스턴스 생성
-    m_fileTransfer = new FileTransfer(m_socket, this);
+    fileTransfer_ = new FileTransfer(socket_, this);
 
     // FileTransfer 시그널 연결
-    connect(m_fileTransfer, &FileTransfer::fileSendCompleted, this,
+    connect(fileTransfer_, &FileTransfer::fileSendCompleted, this,
             [this](const QString &fileName) {
-                emit fileTransferCompleted(m_connectionId, fileName);
+                emit fileTransferCompleted(connectionId_, fileName);
             });
 
-    connect(m_fileTransfer, &FileTransfer::fileSendFailed, this,
+    connect(fileTransfer_, &FileTransfer::fileSendFailed, this,
             [this](const QString &error) {
-                emit fileTransferFailed(m_connectionId, error);
+                emit fileTransferFailed(connectionId_, error);
             });
 
-    qDebug() << "FileTransfer client connected:" << m_connectionId << "from" << clientAddress().toString();
+    qDebug() << "FileTransfer client connected:" << connectionId_ << "from" << clientAddress().toString();
 }
 
 FileTransferConnection::~FileTransferConnection()
 {
-    if (m_fileTransfer) {
-        delete m_fileTransfer;
+    if (fileTransfer_) {
+        delete fileTransfer_;
     }
 
-    if (m_socket && m_socket->state() != QAbstractSocket::UnconnectedState) {
-        m_socket->disconnectFromHost();
+    if (socket_ && socket_->state() != QAbstractSocket::UnconnectedState) {
+        socket_->disconnectFromHost();
     }
 }
 
 void FileTransferConnection::generateConnectionId()
 {
-    m_connectionId = QUuid::createUuid().toString(QUuid::WithoutBraces).left(8);
+    connectionId_ = QUuid::createUuid().toString(QUuid::WithoutBraces).left(8);
 }
 
 QHostAddress FileTransferConnection::clientAddress() const
 {
-    return m_socket ? m_socket->peerAddress() : QHostAddress();
+    return socket_ ? socket_->peerAddress() : QHostAddress();
 }
 
 quint16 FileTransferConnection::clientPort() const
 {
-    return m_socket ? m_socket->peerPort() : 0;
+    return socket_ ? socket_->peerPort() : 0;
 }
 
 bool FileTransferConnection::isConnected() const
 {
-    return m_socket && m_socket->state() == QAbstractSocket::ConnectedState;
+    return socket_ && socket_->state() == QAbstractSocket::ConnectedState;
 }
 
 bool FileTransferConnection::sendFile(const QString &filePath)
 {
-    if (!m_fileTransfer) {
-        emit fileTransferFailed(m_connectionId, "FileTransfer not initialized");
+    if (!fileTransfer_) {
+        emit fileTransferFailed(connectionId_, "FileTransfer not initialized");
         return false;
     }
 
-    return m_fileTransfer->sendFile(filePath);
+    return fileTransfer_->sendFile(filePath);
 }
 
 void FileTransferConnection::onReadyRead()
 {
-    m_buffer.append(m_socket->readAll());
+    buffer_.append(socket_->readAll());
     processFileRequest();
 }
 
@@ -86,30 +86,30 @@ void FileTransferConnection::processFileRequest()
 {
     // 간단한 텍스트 기반 파일 요청 프로토콜
     // 클라이언트가 파일명을 텍스트로 전송하면 해당 파일을 전송
-    while (m_buffer.contains('\n')) {
-        int newlineIndex = m_buffer.indexOf('\n');
-        QByteArray requestLine = m_buffer.left(newlineIndex);
-        m_buffer.remove(0, newlineIndex + 1);
+    while (buffer_.contains('\n')) {
+        int newlineIndex = buffer_.indexOf('\n');
+        QByteArray requestLine = buffer_.left(newlineIndex);
+        buffer_.remove(0, newlineIndex + 1);
 
         QString fileName = QString::fromUtf8(requestLine).trimmed();
         if (!fileName.isEmpty()) {
-            qDebug() << "File requested:" << fileName << "from" << m_connectionId;
-            emit fileRequested(m_connectionId, fileName);
+            qDebug() << "File requested:" << fileName << "from" << connectionId_;
+            emit fileRequested(connectionId_, fileName);
         }
     }
 }
 
 void FileTransferConnection::onDisconnected()
 {
-    qDebug() << "FileTransfer client disconnected:" << m_connectionId;
-    emit connectionDisconnected(m_connectionId);
+    qDebug() << "FileTransfer client disconnected:" << connectionId_;
+    emit connectionDisconnected(connectionId_);
 }
 
 void FileTransferConnection::onSocketError(QAbstractSocket::SocketError error)
 {
-    QString errorString = m_socket->errorString();
-    qDebug() << "FileTransfer client socket error for" << m_connectionId << ":" << errorString;
-    emit fileTransferFailed(m_connectionId, errorString);
+    QString errorString = socket_->errorString();
+    qDebug() << "FileTransfer client socket error for" << connectionId_ << ":" << errorString;
+    emit fileTransferFailed(connectionId_, errorString);
 }
 
 // FileTransferServer 구현

@@ -1,27 +1,27 @@
 #include "UserManageService.h"
 #include <QDebug>
 
-UserManageService* UserManageService::instance = nullptr;
+UserManageService* UserManageService::instance_ = nullptr;
 
 UserManageService::UserManageService(QObject *parent)
     : QObject(parent)
 {
-    userRepo = UserJsonRepo::getInstance();
+    userRepo_ = UserJsonRepo::getInstance();
 }
 
 UserManageService* UserManageService::getInstance()
 {
-    if (instance == nullptr) {
-        instance = new UserManageService();
+    if (instance_ == nullptr) {
+        instance_ = new UserManageService();
     }
-    return instance;
+    return instance_;
 }
 
 void UserManageService::destroyInstance()
 {
-    if (instance != nullptr) {
-        delete instance;
-        instance = nullptr;
+    if (instance_ != nullptr) {
+        delete instance_;
+        instance_ = nullptr;
     }
 }
 
@@ -29,12 +29,12 @@ RaErrorCode UserManageService::createUser(const User& user)
 {
     try {
         // 중복 검사
-        if (userRepo->findUserByStrId(user.getstrId()) != nullptr) {
+        if (userRepo_->findUserByStrId(user.getstrId()) != nullptr) {
             qDebug() << "User already exists with strId:" << user.getstrId();
             return Ra_Domain_Unkown_Error;
         }
 
-        id_t userId = userRepo->insert(user);
+        id_t userId = userRepo_->insert(user);
         if (userId>=0) {
             emit userCreated(userId);
             qDebug() << "User created successfully, ID:" << userId;
@@ -50,13 +50,13 @@ RaErrorCode UserManageService::createUser(const User& user)
 RaErrorCode UserManageService::updateUser(const User& user)
 {
     try {
-        const User* existingUser = userRepo->getObjPtrById(user.getId());
+        const User* existingUser = userRepo_->getObjPtrById(user.getId());
         if (existingUser == nullptr) {
             qDebug() << "User not found for update, ID:" << user.getId();
             return Ra_Domain_Unkown_Error;
         }
 
-        if (userRepo->update(user)) {
+        if (userRepo_->update(user)) {
             emit userUpdated(user.getId());
             qDebug() << "User updated successfully, ID:" << user.getId();
             return Ra_Success;
@@ -71,7 +71,7 @@ RaErrorCode UserManageService::updateUser(const User& user)
 RaErrorCode UserManageService::deleteUser(id_t userId)
 {
     try {
-        if (userRepo->removeById(userId)) {
+        if (userRepo_->removeById(userId)) {
             emit userDeleted(userId);
             qDebug() << "User deleted successfully, ID:" << userId;
             return Ra_Success;
@@ -86,7 +86,7 @@ RaErrorCode UserManageService::deleteUser(id_t userId)
 User* UserManageService::getUserById(id_t userId)
 {
     try {
-        return userRepo->getObjPtrById(userId);
+        return userRepo_->getObjPtrById(userId);
     } catch (...) {
         qDebug() << "Exception in getUserById";
         return nullptr;
@@ -96,7 +96,7 @@ User* UserManageService::getUserById(id_t userId)
 User* UserManageService::getUserByStrId(const QString& strId)
 {
     try {
-        return userRepo->findUserByStrId(strId);
+        return userRepo_->findUserByStrId(strId);
     } catch (...) {
         qDebug() << "Exception in getUserByStrId";
         return nullptr;
@@ -106,7 +106,7 @@ User* UserManageService::getUserByStrId(const QString& strId)
 User* UserManageService::getUserByName(const QString& name)
 {
     try {
-        return userRepo->findUserByName(name);
+        return userRepo_->findUserByName(name);
     } catch (...) {
         qDebug() << "Exception in getUserByName";
         return nullptr;
@@ -116,7 +116,7 @@ User* UserManageService::getUserByName(const QString& name)
 RaErrorCode UserManageService::authenticateUser(const QString& strId, const QString& password, User& outUser)
 {
     try {
-        const User* user = userRepo->findUserByStrId(strId);
+        const User* user = userRepo_->findUserByStrId(strId);
         if (user == nullptr) {
             qDebug() << "User not found for authentication, strId:" << strId;
             return Ra_Domain_Unkown_Error;
@@ -141,7 +141,7 @@ RaErrorCode UserManageService::authenticateUser(const QString& strId, const QStr
 bool UserManageService::verifyUserPermission(id_t userId, PermissionLevel requiredLevel)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         if (user == nullptr) {
             qDebug() << "User not found for permission check, ID:" << userId;
             return false;
@@ -159,7 +159,7 @@ bool UserManageService::verifyUserPermission(id_t userId, PermissionLevel requir
 RaErrorCode UserManageService::changePassword(id_t userId, const QString& oldPassword, const QString& newPassword)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         if (user == nullptr) {
             qDebug() << "User not found for password change, ID:" << userId;
             return Ra_Domain_Unkown_Error;
@@ -177,7 +177,7 @@ RaErrorCode UserManageService::changePassword(id_t userId, const QString& oldPas
         userJson["password"] = newPassword;
 
         if (updatedUser.fromJson(userJson) == Ra_Success) {
-            if (userRepo->update(updatedUser)) {
+            if (userRepo_->update(updatedUser)) {
                 qDebug() << "Password changed successfully for user ID:" << userId;
                 return Ra_Success;
             }
@@ -192,7 +192,7 @@ RaErrorCode UserManageService::changePassword(id_t userId, const QString& oldPas
 RaErrorCode UserManageService::connectUser(id_t userId)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         if (user == nullptr) {
             qDebug() << "User not found for connection, ID:" << userId;
             return Ra_Domain_Unkown_Error;
@@ -201,7 +201,7 @@ RaErrorCode UserManageService::connectUser(id_t userId)
         User updatedUser = *user;
         RaErrorCode result = updatedUser.connect();
         if (result == Ra_Success) {
-            if (userRepo->update(updatedUser)) {
+            if (userRepo_->update(updatedUser)) {
                 emit userConnected(userId);
                 qDebug() << "User connected successfully, ID:" << userId;
                 return Ra_Success;
@@ -217,7 +217,7 @@ RaErrorCode UserManageService::connectUser(id_t userId)
 RaErrorCode UserManageService::disconnectUser(id_t userId)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         if (user == nullptr) {
             qDebug() << "User not found for disconnection, ID:" << userId;
             return Ra_Domain_Unkown_Error;
@@ -226,7 +226,7 @@ RaErrorCode UserManageService::disconnectUser(id_t userId)
         User updatedUser = *user;
         RaErrorCode result = updatedUser.disconnect();
         if (result == Ra_Success) {
-            if (userRepo->update(updatedUser)) {
+            if (userRepo_->update(updatedUser)) {
                 emit userDisconnected(userId);
                 qDebug() << "User disconnected successfully, ID:" << userId;
                 return Ra_Success;
@@ -242,7 +242,7 @@ RaErrorCode UserManageService::disconnectUser(id_t userId)
 bool UserManageService::isUserConnected(id_t userId)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         return user != nullptr && user->isConnected();
     } catch (...) {
         qDebug() << "Exception in isUserConnected";
@@ -253,7 +253,7 @@ bool UserManageService::isUserConnected(id_t userId)
 QVector<User> UserManageService::getAllUsers()
 {
     try {
-        return userRepo->getAllObjects();
+        return userRepo_->getAllObjects();
     } catch (...) {
         qDebug() << "Exception in getAllUsers";
         return QVector<User>();
@@ -263,10 +263,10 @@ QVector<User> UserManageService::getAllUsers()
 bool UserManageService::loadUsers(const QString& filePath)
 {
     try {
-        bool result = userRepo->loadDataFromFile(filePath);
+        bool result = userRepo_->loadDataFromFile(filePath);
         if (result) {
             qDebug() << "Users loaded successfully from:" << filePath;
-            qDebug() << "Total users loaded:" << userRepo->getSize();
+            qDebug() << "Total users loaded:" << userRepo_->getSize();
         } else {
             qDebug() << "Failed to load users from:" << filePath;
         }
@@ -280,9 +280,9 @@ bool UserManageService::loadUsers(const QString& filePath)
 bool UserManageService::saveUsers()
 {
     try {
-        bool result = userRepo->saveToFile();
+        bool result = userRepo_->saveToFile();
         if (result) {
-            qDebug() << "Users saved successfully. Total users:" << userRepo->getSize();
+            qDebug() << "Users saved successfully. Total users:" << userRepo_->getSize();
         } else {
             qDebug() << "Failed to save users";
         }
@@ -296,7 +296,7 @@ bool UserManageService::saveUsers()
 int UserManageService::getUserCount()
 {
     try {
-        return userRepo->getSize();
+        return userRepo_->getSize();
     } catch (...) {
         qDebug() << "Exception in getUserCount";
         return 0;
@@ -308,7 +308,7 @@ QVector<User> UserManageService::getUsersByPermissionLevel(PermissionLevel level
 {
     QVector<User> result;
     try {
-        QVector<User> allUsers = userRepo->getAllObjects();
+        QVector<User> allUsers = userRepo_->getAllObjects();
 
         for (const User& user : allUsers) {
             User tempUser = user; // const 문제 해결을 위한 복사
@@ -329,7 +329,7 @@ QVector<User> UserManageService::getConnectedUsers()
 {
     QVector<User> result;
     try {
-        QVector<User> allUsers = userRepo->getAllObjects();
+        QVector<User> allUsers = userRepo_->getAllObjects();
 
         for (const User& user : allUsers) {
             if (user.isConnected()) {
@@ -349,7 +349,7 @@ QVector<User> UserManageService::searchUsersByName(const QString& namePattern)
 {
     QVector<User> result;
     try {
-        QVector<User> allUsers = userRepo->getAllObjects();
+        QVector<User> allUsers = userRepo_->getAllObjects();
 
         for (const User& user : allUsers) {
             if (user.getName().contains(namePattern, Qt::CaseInsensitive)) {
@@ -368,7 +368,7 @@ QVector<User> UserManageService::searchUsersByName(const QString& namePattern)
 bool UserManageService::isUserEmailUnique(const QString& email, id_t excludeUserId)
 {
     try {
-        QVector<User> allUsers = userRepo->getAllObjects();
+        QVector<User> allUsers = userRepo_->getAllObjects();
 
         for (const User& user : allUsers) {
             if (user.getId() != excludeUserId && user.getEmail() == email) {
@@ -386,7 +386,7 @@ bool UserManageService::isUserEmailUnique(const QString& email, id_t excludeUser
 bool UserManageService::isUserStrIdUnique(const QString& strId, id_t excludeUserId)
 {
     try {
-        const User* existingUser = userRepo->findUserByStrId(strId);
+        const User* existingUser = userRepo_->findUserByStrId(strId);
         return existingUser == nullptr || existingUser->getId() == excludeUserId;
     } catch (...) {
         qDebug() << "Exception in isUserStrIdUnique";
@@ -397,7 +397,7 @@ bool UserManageService::isUserStrIdUnique(const QString& strId, id_t excludeUser
 RaErrorCode UserManageService::updateUserProfile(id_t userId, const QString& name, const QString& email, const QString& address)
 {
     try {
-        const User* user = userRepo->getObjPtrById(userId);
+        const User* user = userRepo_->getObjPtrById(userId);
         if (user == nullptr) {
             qDebug() << "User not found for profile update, ID:" << userId;
             return Ra_Domain_Unkown_Error;
@@ -416,7 +416,7 @@ RaErrorCode UserManageService::updateUserProfile(id_t userId, const QString& nam
         userJson["address"] = address;
 
         if (updatedUser.fromJson(userJson) == Ra_Success) {
-            if (userRepo->update(updatedUser)) {
+            if (userRepo_->update(updatedUser)) {
                 emit userUpdated(userId);
                 qDebug() << "User profile updated successfully, ID:" << userId;
                 return Ra_Success;

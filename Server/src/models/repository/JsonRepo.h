@@ -12,8 +12,8 @@ template <typename T>
 class JsonRepo : public IRepository<T>
 {
 protected:
-    using IRepository<T>::vectorData;
-    using IRepository<T>::filepath;
+    using IRepository<T>::vectorData_;
+    using IRepository<T>::filepath_;
 
 public:
     JsonRepo() : IRepository<T>(){}
@@ -21,13 +21,13 @@ public:
     bool saveToFile() override {
         QJsonArray array;
 
-        for(T* object : vectorData){
+        for(T* object : vectorData_){
             QJsonObject jsonobj = object->toJson();  // Entity* 캐스팅 제거
             array.append(jsonobj);
         }
         QJsonDocument doc(array);
 
-        QFile file(filepath);
+        QFile file(filepath_);
         if (!file.open(QIODevice::WriteOnly)) {
             return false;
         }
@@ -37,18 +37,18 @@ public:
     }
 
     bool loadDataFromFile(const QString& path) override {
-        filepath = path;
-        qDebug() << "start load data1!!! " << filepath;
+        filepath_ = path;
+        qDebug() << "start load data1!!! " << filepath_;
 
         // 기존 데이터 정리
-        for (T* obj : vectorData) {
+        for (T* obj : vectorData_) {
             delete obj;
         }
-        vectorData.clear();
+        vectorData_.clear();
 
-        QFile file(filepath);
+        QFile file(filepath_);
         if (!file.open(QIODevice::ReadOnly)) {
-            qDebug() << "Failed to open file:" << filepath;
+            qDebug() << "Failed to open file:" << filepath_;
             return false;
         }
 
@@ -81,7 +81,7 @@ public:
             RaErrorCode result = object->fromJson(value.toObject());
 
             if (result == Ra_Success) {
-                vectorData.append(object);
+                vectorData_.append(object);
                 qDebug() << "Object loaded successfully, ID:" << object->getId();
             } else {
                 qDebug() << "Failed to parse JSON object, error code:" << result;

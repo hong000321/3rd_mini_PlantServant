@@ -24,7 +24,7 @@ public:
 
     // 상태 확인
     bool isSending() const { return m_sendFile != nullptr; }
-    bool isReceiving() const { return m_receiveFile != nullptr; }
+    bool isReceiving() const { return receiveFile_ != nullptr; }
     bool isTransferring() const { return isSending() || isReceiving(); }
 
     // 전송 중단
@@ -58,16 +58,16 @@ private:
     qint64 m_blockSize;
 
     // 파일 수신용
-    QFile *m_receiveFile;
-    QString m_receiveFileName;
-    qint64 m_totalReceiveBytes;
-    qint64 m_receivedBytes;
-    QByteArray m_receiveBuffer;
+    QFile *receiveFile_;
+    QString receiveFileName_;
+    qint64 totalReceiveBytes_;
+    qint64 receivedBytes_;
+    QByteArray receiveBuffer_;
 
     enum ReceiveState {
         WaitingForHeader,
         WaitingForData
-    } m_receiveState;
+    } receiveState_;
 
     // 유틸리티
     void cleanupSend();

@@ -1,34 +1,34 @@
 #include "ChatManageService.h"
 #include <QDebug>
 
-ChatManageService* ChatManageService::instance = nullptr;
+ChatManageService* ChatManageService::instance_ = nullptr;
 
 ChatManageService::ChatManageService(QObject *parent)
     : QObject(parent)
 {
-    chatRoomRepo = ChatRoomJsonRepo::getInstance();
-    chatRepo = ChatJsonRepo::getInstance();
+    chatRoomRepo_ = ChatRoomJsonRepo::getInstance();
+    chatRepo_ = ChatJsonRepo::getInstance();
 }
 
 ChatManageService* ChatManageService::getInstance()
 {
-    if (instance == nullptr) {
-        instance = new ChatManageService();
+    if (instance_ == nullptr) {
+        instance_ = new ChatManageService();
     }
-    return instance;
+    return instance_;
 }
 
 void ChatManageService::destroyInstance()
 {
-    if (instance != nullptr) {
-        delete instance;
-        instance = nullptr;
+    if (instance_ != nullptr) {
+        delete instance_;
+        instance_ = nullptr;
     }
 }
 
 RaErrorCode ChatManageService::createChatRoom(const ChatRoom& chatRoom)
 {
-    id_t roomId = chatRoomRepo->insert(chatRoom);
+    id_t roomId = chatRoomRepo_->insert(chatRoom);
     if (roomId>=0) {
         emit chatRoomCreated(roomId);
         return Ra_Success;
@@ -39,12 +39,12 @@ RaErrorCode ChatManageService::createChatRoom(const ChatRoom& chatRoom)
 
 RaErrorCode ChatManageService::updateChatRoom(const ChatRoom& chatRoom)
 {
-    const ChatRoom* existingRoom = chatRoomRepo->getObjPtrById(chatRoom.getId());
+    const ChatRoom* existingRoom = chatRoomRepo_->getObjPtrById(chatRoom.getId());
     if (existingRoom == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
 
-    if (chatRoomRepo->update(chatRoom)) {
+    if (chatRoomRepo_->update(chatRoom)) {
         emit chatRoomUpdated(chatRoom.getId());
         return Ra_Success;
     }
@@ -54,7 +54,7 @@ RaErrorCode ChatManageService::updateChatRoom(const ChatRoom& chatRoom)
 
 RaErrorCode ChatManageService::deleteChatRoom(id_t chatRoomId)
 {
-    if (chatRoomRepo->removeById(chatRoomId)) {
+    if (chatRoomRepo_->removeById(chatRoomId)) {
         emit chatRoomDeleted(chatRoomId);
         return Ra_Success;
     }
@@ -64,13 +64,13 @@ RaErrorCode ChatManageService::deleteChatRoom(id_t chatRoomId)
 
 ChatRoom* ChatManageService::getChatRoomById(id_t chatRoomId)
 {
-    return chatRoomRepo->getObjPtrById(chatRoomId);
+    return chatRoomRepo_->getObjPtrById(chatRoomId);
 }
 
 QVector<ChatRoom> ChatManageService::getChatRoomsByUserId(id_t userId)
 {
     QVector<ChatRoom> result;
-    QVector<ChatRoom> allRooms = chatRoomRepo->getAllObjects();
+    QVector<ChatRoom> allRooms = chatRoomRepo_->getAllObjects();
 
     for (const ChatRoom& room : allRooms) {
         QVector<id_t> userIds = room.getUserIds();
@@ -84,12 +84,12 @@ QVector<ChatRoom> ChatManageService::getChatRoomsByUserId(id_t userId)
 
 QVector<ChatRoom> ChatManageService::getAllChatRooms()
 {
-    return chatRoomRepo->getAllObjects();
+    return chatRoomRepo_->getAllObjects();
 }
 
 RaErrorCode ChatManageService::addUserToChatRoom(id_t chatRoomId, id_t userId)
 {
-    const ChatRoom* room = chatRoomRepo->getObjPtrById(chatRoomId);
+    const ChatRoom* room = chatRoomRepo_->getObjPtrById(chatRoomId);
     if (room == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -112,7 +112,7 @@ RaErrorCode ChatManageService::addUserToChatRoom(id_t chatRoomId, id_t userId)
 
 RaErrorCode ChatManageService::removeUserFromChatRoom(id_t chatRoomId, id_t userId)
 {
-    const ChatRoom* room = chatRoomRepo->getObjPtrById(chatRoomId);
+    const ChatRoom* room = chatRoomRepo_->getObjPtrById(chatRoomId);
     if (room == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -133,7 +133,7 @@ RaErrorCode ChatManageService::removeUserFromChatRoom(id_t chatRoomId, id_t user
 
 bool ChatManageService::isUserInChatRoom(id_t chatRoomId, id_t userId)
 {
-    const ChatRoom* room = chatRoomRepo->getObjPtrById(chatRoomId);
+    const ChatRoom* room = chatRoomRepo_->getObjPtrById(chatRoomId);
     if (room == nullptr) {
         return false;
     }
@@ -144,18 +144,18 @@ bool ChatManageService::isUserInChatRoom(id_t chatRoomId, id_t userId)
 
 QVector<id_t> ChatManageService::getChatRoomUsers(id_t chatRoomId)
 {
-    const ChatRoom* room = chatRoomRepo->getObjPtrById(chatRoomId);
+    const ChatRoom* room = chatRoomRepo_->getObjPtrById(chatRoomId);
     return room ? room->getUserIds() : QVector<id_t>();
 }
 
 RaErrorCode ChatManageService::sendMessage(const id_t roomId, const ChatUnit& chatUnit)
 {
-    id_t chatId = chatRepo->insert(chatUnit);
+    id_t chatId = chatRepo_->insert(chatUnit);
     if (chatId>=0) {
-        ChatRoom *room = chatRoomRepo->getObjPtrById(roomId);
+        ChatRoom *room = chatRoomRepo_->getObjPtrById(roomId);
         if(room != nullptr){
             room->addChatId(chatId);
-            chatRoomRepo->saveToFile();
+            chatRoomRepo_->saveToFile();
             emit messageSent(roomId, chatId);
             return Ra_Success;
         }
@@ -166,7 +166,7 @@ RaErrorCode ChatManageService::sendMessage(const id_t roomId, const ChatUnit& ch
 
 RaErrorCode ChatManageService::deleteMessage(id_t chatId)
 {
-    if (chatRepo->removeById(chatId)) {
+    if (chatRepo_->removeById(chatId)) {
         emit messageDeleted(0, chatId); // chatRoomId는 별도로 관리 필요
         return Ra_Success;
     }
@@ -176,12 +176,12 @@ RaErrorCode ChatManageService::deleteMessage(id_t chatId)
 
 const ChatUnit* ChatManageService::getMessageById(id_t chatId)
 {
-    return chatRepo->getObjPtrById(chatId);
+    return chatRepo_->getObjPtrById(chatId);
 }
 
 QVector<ChatUnit> ChatManageService::getMessagesByChatRoom(id_t chatRoomId)
 {
-    const ChatRoom* room = chatRoomRepo->getObjPtrById(chatRoomId);
+    const ChatRoom* room = chatRoomRepo_->getObjPtrById(chatRoomId);
     if (room == nullptr) {
         return QVector<ChatUnit>();
     }
@@ -190,7 +190,7 @@ QVector<ChatUnit> ChatManageService::getMessagesByChatRoom(id_t chatRoomId)
     QVector<id_t> chatIds = room->getChatIds();
 
     for (id_t chatId : chatIds) {
-        const ChatUnit* chat = chatRepo->getObjPtrById(chatId);
+        const ChatUnit* chat = chatRepo_->getObjPtrById(chatId);
         if (chat != nullptr) {
             result.append(*chat);
         }
@@ -202,7 +202,7 @@ QVector<ChatUnit> ChatManageService::getMessagesByChatRoom(id_t chatRoomId)
 QVector<ChatUnit> ChatManageService::getMessagesByUser(id_t userId)
 {
     QVector<ChatUnit> result;
-    QVector<ChatUnit> allMessages = chatRepo->getAllObjects();
+    QVector<ChatUnit> allMessages = chatRepo_->getAllObjects();
 
     for (const ChatUnit& chat : allMessages) {
         if (chat.getUserId() == userId) {
@@ -231,7 +231,7 @@ QVector<ChatUnit> ChatManageService::getMessagesInTimeRange(id_t chatRoomId, con
 QVector<ChatRoom> ChatManageService::searchChatRoomsByName(const QString& name)
 {
     QVector<ChatRoom> result;
-    QVector<ChatRoom> allRooms = chatRoomRepo->getAllObjects();
+    QVector<ChatRoom> allRooms = chatRoomRepo_->getAllObjects();
 
     for (const ChatRoom& room : allRooms) {
         if (room.getRoomName().contains(name, Qt::CaseInsensitive)) {
@@ -245,7 +245,7 @@ QVector<ChatRoom> ChatManageService::searchChatRoomsByName(const QString& name)
 QVector<ChatUnit> ChatManageService::searchMessages(const QString& searchText)
 {
     QVector<ChatUnit> result;
-    QVector<ChatUnit> allMessages = chatRepo->getAllObjects();
+    QVector<ChatUnit> allMessages = chatRepo_->getAllObjects();
 
     for (const ChatUnit& chat : allMessages) {
         if (chat.getChatStr().contains(searchText, Qt::CaseInsensitive)) {
@@ -263,7 +263,7 @@ int ChatManageService::getMessageCount(id_t chatRoomId)
 
 int ChatManageService::getTotalMessageCount()
 {
-    return chatRepo->getSize();
+    return chatRepo_->getSize();
 }
 
 QDateTime ChatManageService::getLastMessageTime(id_t chatRoomId)
@@ -286,19 +286,19 @@ QDateTime ChatManageService::getLastMessageTime(id_t chatRoomId)
 
 bool ChatManageService::loadChatData(const QString& chatRoomFilePath, const QString& chatFilePath)
 {
-    bool roomResult = chatRoomRepo->loadDataFromFile(chatRoomFilePath);
-    bool chatResult = chatRepo->loadDataFromFile(chatFilePath);
+    bool roomResult = chatRoomRepo_->loadDataFromFile(chatRoomFilePath);
+    bool chatResult = chatRepo_->loadDataFromFile(chatFilePath);
     return roomResult && chatResult;
 }
 
 bool ChatManageService::saveChatData()
 {
-    bool roomResult = chatRoomRepo->saveToFile();
-    bool chatResult = chatRepo->saveToFile();
+    bool roomResult = chatRoomRepo_->saveToFile();
+    bool chatResult = chatRepo_->saveToFile();
 
     return roomResult && chatResult;
 }
 
 void ChatManageService::debugPrint(){
-    chatRoomRepo->debugPrint();
+    chatRoomRepo_->debugPrint();
 }

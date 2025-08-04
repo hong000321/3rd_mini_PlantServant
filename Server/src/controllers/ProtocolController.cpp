@@ -7,20 +7,20 @@
 
 ProtocolController::ProtocolController(QObject *parent)
     : QObject(parent)
-    , m_socketServer(nullptr)
+    , socketServer_(nullptr)
 {
     // 서비스 인스턴스 가져오기
-    userService = UserManageService::getInstance();
-    chatService = ChatManageService::getInstance();
-    loginService = LoginService::getInstance();
-    productService = ProductManageService::getInstance();
-    orderService = OrderManageService::getInstance();
+    userService_ = UserManageService::getInstance();
+    chatService_ = ChatManageService::getInstance();
+    loginService_ = LoginService::getInstance();
+    productService_ = ProductManageService::getInstance();
+    orderService_ = OrderManageService::getInstance();
 
     // 채팅 관련 시그널 연결
-    connect(chatService, &ChatManageService::messageSent,
+    connect(chatService_, &ChatManageService::messageSent,
             this, [this](id_t chatRoomId, id_t chatId) {
                 // 채팅 메시지 브로드캐스트
-                const ChatUnit* chat = chatService->getMessageById(chatId);
+                const ChatUnit* chat = chatService_->getMessageById(chatId);
                 if (chat) {
                     broadcastChatMessage(chatRoomId, chat);
                 }
@@ -29,10 +29,10 @@ ProtocolController::ProtocolController(QObject *parent)
 
 ProtocolController::~ProtocolController()
 {
-    userService->saveUsers();
-    productService->saveProducts();
-    orderService->saveOrders();
-    chatService->saveChatData();
+    userService_->saveUsers();
+    productService_->saveProducts();
+    orderService_->saveOrders();
+    chatService_->saveChatData();
 }
 
 bool ProtocolController::initialize(const QString& userFilePath, const QString& productFilePath,
@@ -41,10 +41,10 @@ bool ProtocolController::initialize(const QString& userFilePath, const QString& 
 {
     bool success = true;
 
-    success &= userService->loadUsers(userFilePath);
-    success &= chatService->loadChatData(chatRoomFilePath, chatFilePath);
-    success &= productService->loadProducts(productFilePath);
-    success &= orderService->loadOrders(orderFilePath, orderItemFilePath);
+    success &= userService_->loadUsers(userFilePath);
+    success &= chatService_->loadChatData(chatRoomFilePath, chatFilePath);
+    success &= productService_->loadProducts(productFilePath);
+    success &= orderService_->loadOrders(orderFilePath, orderItemFilePath);
 
     if (success) {
         qDebug() << "ProtocolController initialized successfully";
@@ -206,16 +206,16 @@ QJsonObject ProtocolController::handleUserLogin(const QJsonObject &parameters, c
 
     QString sessionId;
     User user;
-    RaErrorCode result = loginService->login(strId, password, sessionId, user);
+    RaErrorCode result = loginService_->login(strId, password, sessionId, user);
 
     if (result == Ra_Success) {
         // 클라이언트와 세션 연결
-        m_clientSessions[clientId] = sessionId;
+        clientSessions_[clientId] = sessionId;
 
         // SocketServer에 userId 등록
         QString userId = QString::number(user.getId());
-        if (m_socketServer) {
-            m_socketServer->setUserLoggedIn(clientId, userId);
+        if (socketServer_) {
+            socketServer_->setUserLoggedIn(clientId, userId);
         }
 
         QJsonObject userData = userToJson(&user);
@@ -232,16 +232,16 @@ QJsonObject ProtocolController::handleUserLogout(const QJsonObject &parameters, 
 {
     Q_UNUSED(parameters)
 
-    if (m_clientSessions.contains(clientId)) {
-        QString sessionId = m_clientSessions[clientId];
-        RaErrorCode result = loginService->logout(sessionId);
+    if (clientSessions_.contains(clientId)) {
+        QString sessionId = clientSessions_[clientId];
+        RaErrorCode result = loginService_->logout(sessionId);
 
         if (result == Ra_Success) {
-            m_clientSessions.remove(clientId);
+            clientSessions_.remove(clientId);
 
             // SocketServer에서 userId 제거
-            if (m_socketServer) {
-                m_socketServer->setUserLoggedOut(clientId);
+            if (socketServer_) {
+                socketServer_->setUserLoggedOut(clientId);
             }
 
             return createResponse("", "success", 200, "Logout successful");
@@ -255,7 +255,7 @@ QJsonObject ProtocolController::handleUserRegister(const QJsonObject &parameters
 {
     User newUser;
     if (newUser.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = userService->createUser(newUser);
+        RaErrorCode result = userService_->createUser(newUser);
         if (result == Ra_Success) {
             QJsonObject userData = userToJson(&newUser);
             return createResponse("", "success", 201, "User registered successfully", userData);
@@ -269,7 +269,7 @@ QJsonObject ProtocolController::handleUserGet(const QJsonObject &parameters)
 {
     id_t userId = parameters.value("userId").toInteger();
 
-    const User* user = userService->getUserById(userId);
+    const User* user = userService_->getUserById(userId);
     if (user) {
         QJsonObject userData = userToJson(user);
         return createResponse("", "success", 200, "User found", userData);
@@ -282,7 +282,7 @@ QJsonObject ProtocolController::handleUserUpdate(const QJsonObject &parameters)
 {
     User user;
     if (user.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = userService->updateUser(user);
+        RaErrorCode result = userService_->updateUser(user);
         if (result == Ra_Success) {
             QJsonObject userData = userToJson(&user);
             return createResponse("", "success", 200, "User updated successfully", userData);
@@ -297,7 +297,7 @@ QJsonObject ProtocolController::handleProductList(const QJsonObject &parameters)
 {
     Q_UNUSED(parameters)
 
-    QVector<Product> products = productService->getAllProducts();
+    QVector<Product> products = productService_->getAllProducts();
     QJsonArray productArray = vectorToJsonArray(products);
 
     QJsonObject responseData;
@@ -311,7 +311,7 @@ QJsonObject ProtocolController::handleProductGet(const QJsonObject &parameters)
 {
     id_t productId = parameters.value("productId").toInteger();
 
-    const Product* product = productService->getProductById(productId);
+    const Product* product = productService_->getProductById(productId);
     if (product) {
         return createResponse("", "success", 200, "Product found", productToJson(product));
     }
@@ -323,7 +323,7 @@ QJsonObject ProtocolController::handleProductCreate(const QJsonObject &parameter
 {
     Product newProduct;
     if (newProduct.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = productService->createProduct(newProduct);
+        RaErrorCode result = productService_->createProduct(newProduct);
         if (result == Ra_Success) {
             return createResponse("", "success", 201, "Product created successfully", productToJson(&newProduct));
         }
@@ -336,7 +336,7 @@ QJsonObject ProtocolController::handleProductUpdate(const QJsonObject &parameter
 {
     Product product;
     if (product.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = productService->updateProduct(product);
+        RaErrorCode result = productService_->updateProduct(product);
         if (result == Ra_Success) {
             return createResponse("", "success", 200, "Product updated successfully", productToJson(&product));
         }
@@ -349,7 +349,7 @@ QJsonObject ProtocolController::handleProductDelete(const QJsonObject &parameter
 {
     id_t productId = parameters.value("productId").toInteger();
 
-    RaErrorCode result = productService->deleteProduct(productId);
+    RaErrorCode result = productService_->deleteProduct(productId);
     if (result == Ra_Success) {
         return createResponse("", "success", 200, "Product deleted successfully");
     }
@@ -362,7 +362,7 @@ QJsonObject ProtocolController::handleOrderCreate(const QJsonObject &parameters)
 {
     Order newOrder;
     if (newOrder.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService->createOrder(newOrder);
+        RaErrorCode result = orderService_->createOrder(newOrder);
         if (result == Ra_Success) {
             return createResponse("", "success", 201, "Order created successfully", orderToJson(&newOrder));
         }
@@ -375,7 +375,7 @@ QJsonObject ProtocolController::handleOrderGet(const QJsonObject &parameters)
 {
     id_t orderId = parameters.value("orderId").toInteger();
 
-    const Order* order = orderService->getOrderById(orderId);
+    const Order* order = orderService_->getOrderById(orderId);
     if (order) {
         return createResponse("", "success", 200, "Order found", orderToJson(order));
     }
@@ -389,9 +389,9 @@ QJsonObject ProtocolController::handleOrderList(const QJsonObject &parameters)
 
     QVector<Order> orders;
     if (userId > 0) {
-        orders = orderService->getOrdersByUserId(userId);
+        orders = orderService_->getOrdersByUserId(userId);
     } else {
-        orders = orderService->getAllOrders();
+        orders = orderService_->getAllOrders();
     }
 
     QJsonArray orderArray = vectorToJsonArray(orders);
@@ -407,7 +407,7 @@ QJsonObject ProtocolController::handleOrderUpdate(const QJsonObject &parameters)
 {
     Order order;
     if (order.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService->updateOrder(order);
+        RaErrorCode result = orderService_->updateOrder(order);
         if (result == Ra_Success) {
             return createResponse("", "success", 200, "Order updated successfully", orderToJson(&order));
         }
@@ -421,7 +421,7 @@ QJsonObject ProtocolController::handleOrderItemAdd(const QJsonObject &parameters
 {
     OrderItem newItem;
     if (newItem.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService->addOrderItem(newItem);
+        RaErrorCode result = orderService_->addOrderItem(newItem);
         if (result == Ra_Success) {
             return createResponse("", "success", 201, "Order item added successfully", orderItemToJson(&newItem));
         }
@@ -434,7 +434,7 @@ QJsonObject ProtocolController::handleOrderItemUpdate(const QJsonObject &paramet
 {
     OrderItem item;
     if (item.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = orderService->updateOrderItem(item);
+        RaErrorCode result = orderService_->updateOrderItem(item);
         if (result == Ra_Success) {
             return createResponse("", "success", 200, "Order item updated successfully", orderItemToJson(&item));
         }
@@ -447,7 +447,7 @@ QJsonObject ProtocolController::handleOrderItemRemove(const QJsonObject &paramet
 {
     id_t itemId = parameters.value("itemId").toInteger();
 
-    RaErrorCode result = orderService->removeOrderItem(itemId);
+    RaErrorCode result = orderService_->removeOrderItem(itemId);
     if (result == Ra_Success) {
         return createResponse("", "success", 200, "Order item removed successfully");
     }
@@ -460,7 +460,7 @@ QJsonObject ProtocolController::handleChatRoomCreate(const QJsonObject &paramete
 {
     ChatRoom newRoom;
     if (newRoom.fromJson(parameters) == Ra_Success) {
-        RaErrorCode result = chatService->createChatRoom(newRoom);
+        RaErrorCode result = chatService_->createChatRoom(newRoom);
         if (result == Ra_Success) {
             return createResponse("", "success", 201, "Chat room created successfully", chatRoomToJson(&newRoom));
         }
@@ -474,11 +474,11 @@ QJsonObject ProtocolController::handleChatRoomJoin(const QJsonObject &parameters
     id_t roomId = parameters.value("chatRoomId").toInteger();
     id_t userId = parameters.value("userId").toInteger();
     qDebug() << QString("Debug :: chatRoomJoin :: roomId(%1) userId(%2)").arg(roomId).arg(userId);
-    chatService->debugPrint();
+    chatService_->debugPrint();
     if(roomId>0){
-        RaErrorCode result = chatService->addUserToChatRoom(roomId, userId);
+        RaErrorCode result = chatService_->addUserToChatRoom(roomId, userId);
         if (result == Ra_Success) {
-            const ChatRoom* room = chatService->getChatRoomById(roomId);
+            const ChatRoom* room = chatService_->getChatRoomById(roomId);
             return createResponse("", "success", 200, "Joined chat room successfully", chatRoomToJson(room));
         }
     }
@@ -491,7 +491,7 @@ QJsonObject ProtocolController::handleChatRoomLeave(const QJsonObject &parameter
     id_t roomId = parameters.value("chatRoomId").toInteger();
     id_t userId = parameters.value("userId").toInteger();
 
-    RaErrorCode result = chatService->removeUserFromChatRoom(roomId, userId);
+    RaErrorCode result = chatService_->removeUserFromChatRoom(roomId, userId);
     if (result == Ra_Success) {
         return createResponse("", "success", 200, "Left chat room successfully");
     }
@@ -503,7 +503,7 @@ QJsonObject ProtocolController::handleChatRoomList(const QJsonObject &parameters
 {
     Q_UNUSED(parameters)
 
-    QVector<ChatRoom> rooms = chatService->getAllChatRooms();
+    QVector<ChatRoom> rooms = chatService_->getAllChatRooms();
     QJsonArray roomArray = vectorToJsonArray(rooms);
 
     QJsonObject responseData;
@@ -524,7 +524,7 @@ QJsonObject ProtocolController::handleChatSend(const QJsonObject &parameters, co
     QString chatStr = parameters.value("chatStr").toString();
 
     // 사용자가 채팅방에 속해있는지 확인
-    if (!chatService->isUserInChatRoom(chatRoomId, userId)) {
+    if (!chatService_->isUserInChatRoom(chatRoomId, userId)) {
         return createErrorResponse("", "ACCESS_DENIED", "User is not in the chat room");
     }
 
@@ -539,7 +539,7 @@ QJsonObject ProtocolController::handleChatSend(const QJsonObject &parameters, co
 
     newChat.fromJson(chatData);
 
-    RaErrorCode result = chatService->sendMessage(chatRoomId, newChat);
+    RaErrorCode result = chatService_->sendMessage(chatRoomId, newChat);
     if (result == Ra_Success) {
         return createResponse("", "success", 201, "Message sent successfully", chatUnitToJson(&newChat));
     }
@@ -551,7 +551,7 @@ QJsonObject ProtocolController::handleChatHistory(const QJsonObject &parameters)
 {
     id_t roomId = parameters.value("chatRoomId").toInteger();
     if(roomId>0){
-        QVector<ChatUnit> messages = chatService->getMessagesByChatRoom(roomId);
+        QVector<ChatUnit> messages = chatService_->getMessagesByChatRoom(roomId);
 
         QJsonArray messageArray;
         for (const ChatUnit& chat : messages) {
@@ -571,10 +571,10 @@ QJsonObject ProtocolController::handleChatHistory(const QJsonObject &parameters)
 // 채팅 브로드캐스트 처리
 void ProtocolController::broadcastChatMessage(id_t chatRoomId, const ChatUnit* chatUnit)
 {
-    if (!chatUnit || !m_socketServer) return;
+    if (!chatUnit || !socketServer_) return;
 
     // 채팅방의 모든 사용자에게 브로드캐스트
-    const ChatRoom* room = chatService->getChatRoomById(chatRoomId);
+    const ChatRoom* room = chatService_->getChatRoomById(chatRoomId);
     if (!room) return;
 
     QVector<id_t> userIds = room->getUserIds();
@@ -613,12 +613,12 @@ bool ProtocolController::validateMessage(const QJsonObject &message)
 
 bool ProtocolController::checkAuthentication(const QString &clientId)
 {
-    if (!m_clientSessions.contains(clientId)) {
+    if (!clientSessions_.contains(clientId)) {
         return false;
     }
 
-    QString sessionId = m_clientSessions[clientId];
-    return loginService->isSessionValid(sessionId);
+    QString sessionId = clientSessions_[clientId];
+    return loginService_->isSessionValid(sessionId);
 }
 
 bool ProtocolController::checkPermission(const QString &clientId, const QString &action, const QString &target)
@@ -632,12 +632,12 @@ bool ProtocolController::checkPermission(const QString &clientId, const QString 
 
 id_t ProtocolController::getCurrentUserId(const QString &clientId)
 {
-    if (!m_clientSessions.contains(clientId)) {
+    if (!clientSessions_.contains(clientId)) {
         return -1;
     }
 
-    QString sessionId = m_clientSessions[clientId];
-    return loginService->getUserBySession(sessionId);
+    QString sessionId = clientSessions_[clientId];
+    return loginService_->getUserBySession(sessionId);
 }
 
 // 데이터 변환 유틸리티들
@@ -673,7 +673,7 @@ QJsonObject ProtocolController::chatRoomToJson(const ChatRoom* chatRoom)
 QJsonObject ProtocolController::chatUnitToJson(const ChatUnit* chatUnit)
 {
     QJsonObject jsonObj = chatUnit ? chatUnit->toJson() : QJsonObject();
-    User *user = userService->getUserById(chatUnit->getUserId());
+    User *user = userService_->getUserById(chatUnit->getUserId());
     QString userName = user->getName();
     jsonObj.insert("userName",userName);
     return jsonObj;

@@ -14,7 +14,7 @@
 #include "models/service/ProductManageService.h"
 #include "models/service/OrderManageService.h"
 #include "models/service/ChatManageService.h"
-#include "models/service/LoginService.h"
+#include "models/service/loginService.h"
 
 // 전방 선언
 class SocketServer;
@@ -28,7 +28,7 @@ public:
     ~ProtocolController();
 
     // SocketServer 설정
-    void setSocketServer(SocketServer *server) { m_socketServer = server; }
+    void setSocketServer(SocketServer *server) { socketServer_ = server; }
 
     // 초기화
     bool initialize(const QString& userFilePath, const QString& productFilePath,
@@ -51,15 +51,15 @@ signals:
 
 private:
     // 서비스 인스턴스들
-    UserManageService* userService;
-    ProductManageService* productService;
-    OrderManageService* orderService;
-    ChatManageService* chatService;
-    LoginService* loginService;
-    SocketServer* m_socketServer;
+    UserManageService* userService_;
+    ProductManageService* productService_;
+    OrderManageService* orderService_;
+    ChatManageService* chatService_;
+    LoginService* loginService_;
+    SocketServer* socketServer_;
 
-    // 세션 관리
-    QMap<QString, QString> m_clientSessions; // clientId -> sessionId
+    // 세션 관리s
+    QMap<QString, QString> clientSessions_; // clientId -> sessionId
 
     // 메시지 처리 메서드들
     QJsonObject processCommand(const QJsonObject &header, const QJsonObject &body, const QString &clientId);
@@ -69,7 +69,7 @@ private:
     QJsonObject createErrorResponse(const QString &correlationId, const QString &errorCode,
                                     const QString &errorMessage);
 
-    // User 관련 처리 (LoginService 사용)
+    // User 관련 처리 (loginService_ 사용)
     QJsonObject handleUserLogin(const QJsonObject &parameters, const QString &clientId);
     QJsonObject handleUserLogout(const QJsonObject &parameters, const QString &clientId);
     QJsonObject handleUserRegister(const QJsonObject &parameters);

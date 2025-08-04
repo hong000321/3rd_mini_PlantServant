@@ -5,7 +5,7 @@
 
 class ProductJsonRepo : public JsonRepo<Product> {
 private:
-    static ProductJsonRepo* instance;  // 싱글톤 인스턴스
+    static ProductJsonRepo* instance_;  // 싱글톤 인스턴스
     ProductJsonRepo();
     ProductJsonRepo(const ProductJsonRepo&) = delete;
     ProductJsonRepo& operator=(const ProductJsonRepo&) = delete;

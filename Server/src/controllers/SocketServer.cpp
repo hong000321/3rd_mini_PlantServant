@@ -170,7 +170,7 @@ void ClientConnection::onSocketError(QAbstractSocket::SocketError error)
 // SocketServer 구현
 SocketServer::SocketServer(QObject *parent)
     : QObject(parent)
-    , m_server(new QTcpServer(this))
+    , server_(new QTcpServer(this))
 {
     setupConnections();
 }
@@ -182,24 +182,24 @@ SocketServer::~SocketServer()
 
 void SocketServer::setupConnections()
 {
-    connect(m_server, &QTcpServer::newConnection, this, &SocketServer::onNewConnection);
+    connect(server_, &QTcpServer::newConnection, this, &SocketServer::onNewConnection);
 }
 
 bool SocketServer::startServer(const QHostAddress &address, quint16 port)
 {
-    if (m_server->isListening()) {
+    if (server_->isListening()) {
         emit errorOccurred("JSON server is already listening");
         return false;
     }
 
-    bool success = m_server->listen(address, port);
+    bool success = server_->listen(address, port);
 
     if (success) {
-        qDebug() << "JSON server started on" << m_server->serverAddress().toString()
-        << ":" << m_server->serverPort();
-        emit serverStarted(m_server->serverAddress(), m_server->serverPort());
+        qDebug() << "JSON server started on" << server_->serverAddress().toString()
+        << ":" << server_->serverPort();
+        emit serverStarted(server_->serverAddress(), server_->serverPort());
     } else {
-        QString error = QString("Failed to start JSON server: %1").arg(m_server->errorString());
+        QString error = QString("Failed to start JSON server: %1").arg(server_->errorString());
         qDebug() << error;
         emit errorOccurred(error);
     }
@@ -214,57 +214,57 @@ bool SocketServer::startServer(quint16 port)
 
 void SocketServer::stopServer()
 {
-    if (!m_server->isListening()) {
+    if (!server_->isListening()) {
         return;
     }
 
     // 모든 클라이언트 연결 종료
-    for (auto it = m_clients.begin(); it != m_clients.end(); ++it) {
+    for (auto it = clients_.begin(); it != clients_.end(); ++it) {
         it.value()->deleteLater();
     }
-    m_clients.clear();
-    m_userToClient.clear();
-    m_clientToUser.clear();
+    clients_.clear();
+    userToClient_.clear();
+    clientToUser_.clear();
 
-    m_server->close();
+    server_->close();
     qDebug() << "JSON server stopped";
     emit serverStopped();
 }
 
 bool SocketServer::isListening() const
 {
-    return m_server->isListening();
+    return server_->isListening();
 }
 
 QStringList SocketServer::getConnectedClients() const
 {
-    return m_clients.keys();
+    return clients_.keys();
 }
 
 QStringList SocketServer::getLoggedInUsers() const
 {
-    return m_userToClient.keys();
+    return userToClient_.keys();
 }
 
 int SocketServer::getClientCount() const
 {
-    return m_clients.size();
+    return clients_.size();
 }
 
 int SocketServer::getLoggedInUserCount() const
 {
-    return m_userToClient.size();
+    return userToClient_.size();
 }
 
 ClientConnection* SocketServer::getClient(const QString &clientId) const
 {
-    return m_clients.value(clientId, nullptr);
+    return clients_.value(clientId, nullptr);
 }
 
 ClientConnection* SocketServer::getClientByUserId(const QString &userId) const
 {
-    QString clientId = m_userToClient.value(userId);
-    return clientId.isEmpty() ? nullptr : m_clients.value(clientId, nullptr);
+    QString clientId = userToClient_.value(userId);
+    return clientId.isEmpty() ? nullptr : clients_.value(clientId, nullptr);
 }
 
 void SocketServer::setUserLoggedIn(const QString &clientId, const QString &userId)
@@ -273,25 +273,25 @@ void SocketServer::setUserLoggedIn(const QString &clientId, const QString &userI
     if (!client) return;
 
     // 기존 로그인 정보 정리
-    if (m_clientToUser.contains(clientId)) {
-        QString oldUserId = m_clientToUser[clientId];
-        m_userToClient.remove(oldUserId);
+    if (clientToUser_.contains(clientId)) {
+        QString oldUserId = clientToUser_[clientId];
+        userToClient_.remove(oldUserId);
     }
 
     // 동일한 userId로 다른 클라이언트가 로그인되어 있다면 로그아웃 처리
-    if (m_userToClient.contains(userId)) {
-        QString oldClientId = m_userToClient[userId];
+    if (userToClient_.contains(userId)) {
+        QString oldClientId = userToClient_[userId];
         ClientConnection *oldClient = getClient(oldClientId);
         if (oldClient) {
             oldClient->setUserId("");
         }
-        m_clientToUser.remove(oldClientId);
+        clientToUser_.remove(oldClientId);
     }
 
     // 새로운 로그인 정보 설정
     client->setUserId(userId);
-    m_userToClient[userId] = clientId;
-    m_clientToUser[clientId] = userId;
+    userToClient_[userId] = clientId;
+    clientToUser_[clientId] = userId;
 
     qDebug() << "User logged in:" << userId << "on client:" << clientId;
     emit userLoggedIn(userId, clientId);
@@ -299,17 +299,17 @@ void SocketServer::setUserLoggedIn(const QString &clientId, const QString &userI
 
 void SocketServer::setUserLoggedOut(const QString &clientId)
 {
-    if (!m_clientToUser.contains(clientId)) return;
+    if (!clientToUser_.contains(clientId)) return;
 
-    QString userId = m_clientToUser[clientId];
+    QString userId = clientToUser_[clientId];
     ClientConnection *client = getClient(clientId);
 
     if (client) {
         client->setUserId("");
     }
 
-    m_userToClient.remove(userId);
-    m_clientToUser.remove(clientId);
+    userToClient_.remove(userId);
+    clientToUser_.remove(clientId);
 
     qDebug() << "User logged out:" << userId << "from client:" << clientId;
     emit userLoggedOut(userId);
@@ -384,21 +384,21 @@ bool SocketServer::sendJsonToUser(const QString &userId, const QString &jsonStri
 
 void SocketServer::broadcastJson(const QJsonObject &jsonObject)
 {
-    for (auto client : m_clients.values()) {
+    for (auto client : clients_.values()) {
         client->sendJsonData(jsonObject);
     }
 }
 
 void SocketServer::broadcastJson(const QJsonDocument &jsonDocument)
 {
-    for (auto client : m_clients.values()) {
+    for (auto client : clients_.values()) {
         client->sendJsonData(jsonDocument);
     }
 }
 
 void SocketServer::broadcastJson(const QString &jsonString)
 {
-    for (auto client : m_clients.values()) {
+    for (auto client : clients_.values()) {
         client->sendJsonString(jsonString);
     }
 }
@@ -412,12 +412,12 @@ void SocketServer::broadcastToUsers(const QStringList &userIds, const QJsonObjec
 
 QHostAddress SocketServer::serverAddress() const
 {
-    return m_server->serverAddress();
+    return server_->serverAddress();
 }
 
 quint16 SocketServer::serverPort() const
 {
-    return m_server->serverPort();
+    return server_->serverPort();
 }
 
 QString SocketServer::getServerInfo() const
@@ -435,8 +435,8 @@ QString SocketServer::getServerInfo() const
 
 void SocketServer::onNewConnection()
 {
-    while (m_server->hasPendingConnections()) {
-        QTcpSocket *socket = m_server->nextPendingConnection();
+    while (server_->hasPendingConnections()) {
+        QTcpSocket *socket = server_->nextPendingConnection();
         ClientConnection *client = new ClientConnection(socket, this);
 
         connect(client, &ClientConnection::clientDisconnected,
@@ -448,7 +448,7 @@ void SocketServer::onNewConnection()
         connect(client, &ClientConnection::errorOccurred,
                 this, &SocketServer::onClientError);
 
-        m_clients[client->clientId()] = client;
+        clients_[client->clientId()] = client;
 
         emit clientConnected(client->clientId(), client->clientAddress());
     }
@@ -456,16 +456,16 @@ void SocketServer::onNewConnection()
 
 void SocketServer::onClientDisconnected(const QString &clientId)
 {
-    if (m_clients.contains(clientId)) {
+    if (clients_.contains(clientId)) {
         // 로그인 정보 정리
-        if (m_clientToUser.contains(clientId)) {
-            QString userId = m_clientToUser[clientId];
-            m_userToClient.remove(userId);
-            m_clientToUser.remove(clientId);
+        if (clientToUser_.contains(clientId)) {
+            QString userId = clientToUser_[clientId];
+            userToClient_.remove(userId);
+            clientToUser_.remove(clientId);
         }
 
-        m_clients[clientId]->deleteLater();
-        m_clients.remove(clientId);
+        clients_[clientId]->deleteLater();
+        clients_.remove(clientId);
         emit clientDisconnected(clientId);
     }
 }

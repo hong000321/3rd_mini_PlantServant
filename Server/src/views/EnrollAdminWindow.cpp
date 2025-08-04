@@ -5,31 +5,31 @@
 
 EnrollAdminWindow::EnrollAdminWindow(ProtocolController *protocolController, QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::EnrollAdminWindow)
-    , m_protocolController(protocolController)
+    , ui_(new Ui::EnrollAdminWindow)
+    , protocolController_(protocolController)
 {
-    ui->setupUi(this);
+    ui_->setupUi(this);
 
     // 창 제목 설정
     setWindowTitle("관리자 등록");
 
     // 등록 버튼 연결 (UI 파일의 pushButton_2를 사용)
-    connect(ui->pushButton_register, &QPushButton::clicked,
+    connect(ui_->pushButton_register, &QPushButton::clicked,
             this, &EnrollAdminWindow::on_pushButton_register_clicked);
 
     // 입력 검증을 위한 연결
-    connect(ui->lineEdit_id, &QLineEdit::textChanged,
+    connect(ui_->lineEdit_id, &QLineEdit::textChanged,
             this, &EnrollAdminWindow::on_lineEdit_id_textChanged);
-    connect(ui->lineEdit_email, &QLineEdit::textChanged,
+    connect(ui_->lineEdit_email, &QLineEdit::textChanged,
             this, &EnrollAdminWindow::on_lineEdit_email_textChanged);
 
     // 초기 상태 설정
-    ui->pushButton_register->setEnabled(false);
+    ui_->pushButton_register->setEnabled(false);
 }
 
 EnrollAdminWindow::~EnrollAdminWindow()
 {
-    delete ui;
+    delete ui_;
 }
 
 void EnrollAdminWindow::on_pushButton_register_clicked()
@@ -39,11 +39,11 @@ void EnrollAdminWindow::on_pushButton_register_clicked()
     }
 
     // 입력값 수집
-    QString strId = ui->lineEdit_id->text().trimmed();
-    QString password = ui->lineEdit_password->text();
-    QString name = ui->lineEdit_name->text().trimmed();
-    QString email = ui->lineEdit_email->text().trimmed();
-    QString address = ui->lineEdit_address->text().trimmed();
+    QString strId = ui_->lineEdit_id->text().trimmed();
+    QString password = ui_->lineEdit_password->text();
+    QString name = ui_->lineEdit_name->text().trimmed();
+    QString email = ui_->lineEdit_email->text().trimmed();
+    QString address = ui_->lineEdit_address->text().trimmed();
 
     try {
         // User 객체 생성
@@ -82,7 +82,7 @@ void EnrollAdminWindow::on_pushButton_register_clicked()
         };
 
         // 직접 ProtocolController에서 사용자 서비스를 통해 등록
-        if (m_protocolController) {
+        if (protocolController_) {
             // UserManageService를 통해 직접 등록
             UserManageService* userService = UserManageService::getInstance();
             RaErrorCode createResult = userService->createUser(newAdmin);
@@ -116,38 +116,38 @@ void EnrollAdminWindow::on_lineEdit_id_textChanged(const QString &text)
 {
     Q_UNUSED(text)
     // 입력 검증 후 등록 버튼 활성화/비활성화
-    ui->pushButton_register->setEnabled(validateInput());
+    ui_->pushButton_register->setEnabled(validateInput());
 }
 
 void EnrollAdminWindow::on_lineEdit_email_textChanged(const QString &text)
 {
     Q_UNUSED(text)
     // 입력 검증 후 등록 버튼 활성화/비활성화
-    ui->pushButton_register->setEnabled(validateInput());
+    ui_->pushButton_register->setEnabled(validateInput());
 }
 
 bool EnrollAdminWindow::validateInput()
 {
     // 아이디 검증
-    QString strId = ui->lineEdit_id->text().trimmed();
+    QString strId = ui_->lineEdit_id->text().trimmed();
     if (strId.length() < 3 || strId.length() > 20) {
         return false;
     }
 
     // 비밀번호 검증
-    QString password = ui->lineEdit_password->text();
+    QString password = ui_->lineEdit_password->text();
     if (password.length() < 4) {
         return false;
     }
 
     // 이름 검증
-    QString name = ui->lineEdit_name->text().trimmed();
+    QString name = ui_->lineEdit_name->text().trimmed();
     if (name.isEmpty()) {
         return false;
     }
 
     // 이메일 검증
-    QString email = ui->lineEdit_email->text().trimmed();
+    QString email = ui_->lineEdit_email->text().trimmed();
     QRegularExpression emailRegex(R"(^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$)");
     if (!emailRegex.match(email).hasMatch()) {
         return false;
@@ -158,14 +158,14 @@ bool EnrollAdminWindow::validateInput()
 
 void EnrollAdminWindow::clearForm()
 {
-    ui->lineEdit_id->clear();        // 아이디
-    ui->lineEdit_password->clear();      // 비밀번호
-    ui->lineEdit_name->clear();      // 이름
-    ui->lineEdit_email->clear();      // 이메일
-    ui->lineEdit_address->clear();      // 주소
+    ui_->lineEdit_id->clear();        // 아이디
+    ui_->lineEdit_password->clear();      // 비밀번호
+    ui_->lineEdit_name->clear();      // 이름
+    ui_->lineEdit_email->clear();      // 이메일
+    ui_->lineEdit_address->clear();      // 주소
 
-    ui->lineEdit_id->setFocus();
-    ui->pushButton_register->setEnabled(false);
+    ui_->lineEdit_id->setFocus();
+    ui_->pushButton_register->setEnabled(false);
 }
 
 void EnrollAdminWindow::showMessage(const QString &title, const QString &message, bool isError)

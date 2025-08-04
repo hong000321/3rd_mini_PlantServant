@@ -2,34 +2,34 @@
 #include <QUuid>
 #include <QDebug>
 
-LoginService* LoginService::instance = nullptr;
+LoginService* LoginService::instance_ = nullptr;
 
 LoginService::LoginService(QObject *parent)
     : QObject(parent)
 {
-    userService = UserManageService::getInstance();
+    userService_ = UserManageService::getInstance();
 }
 
 LoginService* LoginService::getInstance()
 {
-    if (instance == nullptr) {
-        instance = new LoginService();
+    if (instance_ == nullptr) {
+        instance_ = new LoginService();
     }
-    return instance;
+    return instance_;
 }
 
 void LoginService::destroyInstance()
 {
-    if (instance != nullptr) {
-        delete instance;
-        instance = nullptr;
+    if (instance_ != nullptr) {
+        delete instance_;
+        instance_ = nullptr;
     }
 }
 
 RaErrorCode LoginService::login(const QString& strId, const QString& password, QString& outSessionId, User& outUser)
 {
     // 사용자 인증
-    RaErrorCode authResult = userService->authenticateUser(strId, password, outUser);
+    RaErrorCode authResult = userService_->authenticateUser(strId, password, outUser);
     if (authResult != Ra_Success) {
         return authResult;
     }
@@ -49,11 +49,11 @@ RaErrorCode LoginService::login(const QString& strId, const QString& password, Q
     sessionInfo.lastAccessTime = QDateTime::currentDateTime();
     sessionInfo.isActive = true;
 
-    activeSessions[outSessionId] = sessionInfo;
-    userSessions[outUser.getId()] = outSessionId;
+    activeSessions_[outSessionId] = sessionInfo;
+    userSessions_[outUser.getId()] = outSessionId;
 
     // 사용자 연결 상태 업데이트
-    userService->connectUser(outUser.getId());
+    userService_->connectUser(outUser.getId());
 
     emit userLoggedIn(outUser.getId(), outSessionId);
     qDebug() << "User logged in:" << strId << "Session:" << outSessionId;
@@ -63,15 +63,15 @@ RaErrorCode LoginService::login(const QString& strId, const QString& password, Q
 
 RaErrorCode LoginService::logout(const QString& sessionId)
 {
-    if (!activeSessions.contains(sessionId)) {
+    if (!activeSessions_.contains(sessionId)) {
         return Ra_Domain_Unkown_Error;
     }
 
-    SessionInfo sessionInfo = activeSessions[sessionId];
+    SessionInfo sessionInfo = activeSessions_[sessionId];
     id_t userId = sessionInfo.userId;
 
     // 사용자 연결 상태 업데이트
-    userService->disconnectUser(userId);
+    userService_->disconnectUser(userId);
 
     removeSession(sessionId);
 
@@ -83,49 +83,49 @@ RaErrorCode LoginService::logout(const QString& sessionId)
 
 RaErrorCode LoginService::logoutUser(id_t userId)
 {
-    if (!userSessions.contains(userId)) {
+    if (!userSessions_.contains(userId)) {
         return Ra_Domain_Unkown_Error;
     }
 
-    QString sessionId = userSessions[userId];
+    QString sessionId = userSessions_[userId];
     return logout(sessionId);
 }
 
 bool LoginService::isSessionValid(const QString& sessionId)
 {
-    return activeSessions.contains(sessionId) && activeSessions[sessionId].isActive;
+    return activeSessions_.contains(sessionId) && activeSessions_[sessionId].isActive;
 }
 
 bool LoginService::isUserLoggedIn(id_t userId)
 {
-    return userSessions.contains(userId) && isSessionValid(userSessions[userId]);
+    return userSessions_.contains(userId) && isSessionValid(userSessions_[userId]);
 }
 
 const SessionInfo* LoginService::getSessionInfo(const QString& sessionId)
 {
-    if (activeSessions.contains(sessionId)) {
-        return &activeSessions[sessionId];
+    if (activeSessions_.contains(sessionId)) {
+        return &activeSessions_[sessionId];
     }
     return nullptr;
 }
 
 id_t LoginService::getUserBySession(const QString& sessionId)
 {
-    if (activeSessions.contains(sessionId)) {
-        return activeSessions[sessionId].userId;
+    if (activeSessions_.contains(sessionId)) {
+        return activeSessions_[sessionId].userId;
     }
     return -1;
 }
 
 QString LoginService::getSessionByUser(id_t userId)
 {
-    return userSessions.value(userId, "");
+    return userSessions_.value(userId, "");
 }
 
 void LoginService::updateSessionAccess(const QString& sessionId)
 {
-    if (activeSessions.contains(sessionId)) {
-        activeSessions[sessionId].lastAccessTime = QDateTime::currentDateTime();
+    if (activeSessions_.contains(sessionId)) {
+        activeSessions_[sessionId].lastAccessTime = QDateTime::currentDateTime();
     }
 }
 
@@ -134,14 +134,14 @@ void LoginService::cleanupExpiredSessions(int timeoutMinutes)
     QDateTime cutoffTime = QDateTime::currentDateTime().addSecs(-timeoutMinutes * 60);
     QStringList expiredSessions;
 
-    for (auto it = activeSessions.begin(); it != activeSessions.end(); ++it) {
+    for (auto it = activeSessions_.begin(); it != activeSessions_.end(); ++it) {
         if (it.value().lastAccessTime < cutoffTime) {
             expiredSessions.append(it.key());
         }
     }
 
     for (const QString& sessionId : expiredSessions) {
-        SessionInfo sessionInfo = activeSessions[sessionId];
+        SessionInfo sessionInfo = activeSessions_[sessionId];
         emit sessionExpired(sessionInfo.userId, sessionId);
         removeSession(sessionId);
     }
@@ -149,9 +149,9 @@ void LoginService::cleanupExpiredSessions(int timeoutMinutes)
 
 void LoginService::forceLogoutUser(id_t userId)
 {
-    if (userSessions.contains(userId)) {
-        QString sessionId = userSessions[userId];
-        userService->disconnectUser(userId);
+    if (userSessions_.contains(userId)) {
+        QString sessionId = userSessions_[userId];
+        userService_->disconnectUser(userId);
         removeSession(sessionId);
         emit userLoggedOut(userId, sessionId);
     }
@@ -160,7 +160,7 @@ void LoginService::forceLogoutUser(id_t userId)
 QVector<SessionInfo> LoginService::getActiveSessions()
 {
     QVector<SessionInfo> sessions;
-    for (auto it = activeSessions.begin(); it != activeSessions.end(); ++it) {
+    for (auto it = activeSessions_.begin(); it != activeSessions_.end(); ++it) {
         if (it.value().isActive) {
             sessions.append(it.value());
         }
@@ -171,7 +171,7 @@ QVector<SessionInfo> LoginService::getActiveSessions()
 int LoginService::getActiveSessionCount()
 {
     int count = 0;
-    for (auto it = activeSessions.begin(); it != activeSessions.end(); ++it) {
+    for (auto it = activeSessions_.begin(); it != activeSessions_.end(); ++it) {
         if (it.value().isActive) {
             count++;
         }
@@ -181,10 +181,10 @@ int LoginService::getActiveSessionCount()
 
 QDateTime LoginService::getLastLoginTime(id_t userId)
 {
-    if (userSessions.contains(userId)) {
-        QString sessionId = userSessions[userId];
-        if (activeSessions.contains(sessionId)) {
-            return activeSessions[sessionId].loginTime;
+    if (userSessions_.contains(userId)) {
+        QString sessionId = userSessions_[userId];
+        if (activeSessions_.contains(sessionId)) {
+            return activeSessions_[sessionId].loginTime;
         }
     }
     return QDateTime();
@@ -197,9 +197,9 @@ QString LoginService::generateSessionId()
 
 void LoginService::removeSession(const QString& sessionId)
 {
-    if (activeSessions.contains(sessionId)) {
-        id_t userId = activeSessions[sessionId].userId;
-        activeSessions.remove(sessionId);
-        userSessions.remove(userId);
+    if (activeSessions_.contains(sessionId)) {
+        id_t userId = activeSessions_[sessionId].userId;
+        activeSessions_.remove(sessionId);
+        userSessions_.remove(userId);
     }
 }

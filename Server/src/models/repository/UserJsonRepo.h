@@ -6,7 +6,7 @@
 
 class UserJsonRepo : public JsonRepo<User> {
 private:
-    static UserJsonRepo* instance;
+    static UserJsonRepo* instance_;
     UserJsonRepo();
     UserJsonRepo(const UserJsonRepo&) = delete;
     UserJsonRepo& operator=(const UserJsonRepo&) = delete;

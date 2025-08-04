@@ -1,34 +1,34 @@
 #include "OrderManageService.h"
 #include <QDebug>
 
-OrderManageService* OrderManageService::instance = nullptr;
+OrderManageService* OrderManageService::instance_ = nullptr;
 
 OrderManageService::OrderManageService(QObject *parent)
     : QObject(parent)
 {
-    orderRepo = OrderJsonRepo::getInstance();
-    orderItemRepo = OrderItemJsonRepo::getInstance();
+    orderRepo_ = OrderJsonRepo::getInstance();
+    orderItemRepo_ = OrderItemJsonRepo::getInstance();
 }
 
 OrderManageService* OrderManageService::getInstance()
 {
-    if (instance == nullptr) {
-        instance = new OrderManageService();
+    if (instance_ == nullptr) {
+        instance_ = new OrderManageService();
     }
-    return instance;
+    return instance_;
 }
 
 void OrderManageService::destroyInstance()
 {
-    if (instance != nullptr) {
-        delete instance;
-        instance = nullptr;
+    if (instance_ != nullptr) {
+        delete instance_;
+        instance_ = nullptr;
     }
 }
 
 RaErrorCode OrderManageService::createOrder(const Order& order)
 {
-    id_t orderId = orderRepo->insert(order);
+    id_t orderId = orderRepo_->insert(order);
     if (orderId >= 0) {
         emit orderCreated(orderId);
         return Ra_Success;
@@ -39,12 +39,12 @@ RaErrorCode OrderManageService::createOrder(const Order& order)
 
 RaErrorCode OrderManageService::updateOrder(const Order& order)
 {
-    const Order* existingOrder = orderRepo->getObjPtrById(order.getId());
+    const Order* existingOrder = orderRepo_->getObjPtrById(order.getId());
     if (existingOrder == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
 
-    if (orderRepo->update(order)) {
+    if (orderRepo_->update(order)) {
         emit orderUpdated(order.getId());
         return Ra_Success;
     }
@@ -54,7 +54,7 @@ RaErrorCode OrderManageService::updateOrder(const Order& order)
 
 RaErrorCode OrderManageService::deleteOrder(id_t orderId)
 {
-    if (orderRepo->removeById(orderId)) {
+    if (orderRepo_->removeById(orderId)) {
         emit orderDeleted(orderId);
         return Ra_Success;
     }
@@ -64,13 +64,13 @@ RaErrorCode OrderManageService::deleteOrder(id_t orderId)
 
 const Order* OrderManageService::getOrderById(id_t orderId)
 {
-    return orderRepo->getObjPtrById(orderId);
+    return orderRepo_->getObjPtrById(orderId);
 }
 
 QVector<Order> OrderManageService::getOrdersByUserId(id_t userId)
 {
     QVector<Order> result;
-    QVector<Order> allOrders = orderRepo->getAllObjects();
+    QVector<Order> allOrders = orderRepo_->getAllObjects();
 
     for (const Order& order : allOrders) {
         if (order.getUserId() == userId) {
@@ -83,12 +83,12 @@ QVector<Order> OrderManageService::getOrdersByUserId(id_t userId)
 
 QVector<Order> OrderManageService::getAllOrders()
 {
-    return orderRepo->getAllObjects();
+    return orderRepo_->getAllObjects();
 }
 
 RaErrorCode OrderManageService::addOrderItem(const OrderItem& orderItem)
 {
-    id_t itemId = orderItemRepo->insert(orderItem);
+    id_t itemId = orderItemRepo_->insert(orderItem);
     if (itemId >= 0) {
         emit orderItemAdded(0, itemId); // orderId는 별도로 관리 필요
         return Ra_Success;
@@ -99,12 +99,12 @@ RaErrorCode OrderManageService::addOrderItem(const OrderItem& orderItem)
 
 RaErrorCode OrderManageService::updateOrderItem(const OrderItem& orderItem)
 {
-    const OrderItem* existingItem = orderItemRepo->getObjPtrById(orderItem.getId());
+    const OrderItem* existingItem = orderItemRepo_->getObjPtrById(orderItem.getId());
     if (existingItem == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
 
-    if (orderItemRepo->update(orderItem)) {
+    if (orderItemRepo_->update(orderItem)) {
         return Ra_Success;
     }
 
@@ -113,7 +113,7 @@ RaErrorCode OrderManageService::updateOrderItem(const OrderItem& orderItem)
 
 RaErrorCode OrderManageService::removeOrderItem(id_t orderItemId)
 {
-    if (orderItemRepo->removeById(orderItemId)) {
+    if (orderItemRepo_->removeById(orderItemId)) {
         emit orderItemRemoved(0, orderItemId); // orderId는 별도로 관리 필요
         return Ra_Success;
     }
@@ -123,12 +123,12 @@ RaErrorCode OrderManageService::removeOrderItem(id_t orderItemId)
 
 const OrderItem* OrderManageService::getOrderItemById(id_t orderItemId)
 {
-    return orderItemRepo->getObjPtrById(orderItemId);
+    return orderItemRepo_->getObjPtrById(orderItemId);
 }
 
 QVector<OrderItem> OrderManageService::getOrderItemsByOrderId(id_t orderId)
 {
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return QVector<OrderItem>();
     }
@@ -137,7 +137,7 @@ QVector<OrderItem> OrderManageService::getOrderItemsByOrderId(id_t orderId)
     QVector<id_t> itemIds = order->getItemIds();
 
     for (id_t itemId : itemIds) {
-        const OrderItem* item = orderItemRepo->getObjPtrById(itemId);
+        const OrderItem* item = orderItemRepo_->getObjPtrById(itemId);
         if (item != nullptr) {
             result.append(*item);
         }
@@ -149,7 +149,7 @@ QVector<OrderItem> OrderManageService::getOrderItemsByOrderId(id_t orderId)
 RaErrorCode OrderManageService::processOrder(id_t orderId)
 {
     // 주문 처리 로직 구현
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -161,7 +161,7 @@ RaErrorCode OrderManageService::processOrder(id_t orderId)
 
 RaErrorCode OrderManageService::cancelOrder(id_t orderId)
 {
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -172,7 +172,7 @@ RaErrorCode OrderManageService::cancelOrder(id_t orderId)
 
 RaErrorCode OrderManageService::shipOrder(id_t orderId)
 {
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -183,7 +183,7 @@ RaErrorCode OrderManageService::shipOrder(id_t orderId)
 
 RaErrorCode OrderManageService::deliverOrder(id_t orderId)
 {
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return Ra_Domain_Unkown_Error;
     }
@@ -194,7 +194,7 @@ RaErrorCode OrderManageService::deliverOrder(id_t orderId)
 
 qreal OrderManageService::calculateOrderTotal(id_t orderId)
 {
-    const Order* order = orderRepo->getObjPtrById(orderId);
+    const Order* order = orderRepo_->getObjPtrById(orderId);
     if (order == nullptr) {
         return 0.0;
     }
@@ -203,7 +203,7 @@ qreal OrderManageService::calculateOrderTotal(id_t orderId)
     QVector<id_t> itemIds = order->getItemIds();
 
     for (id_t itemId : itemIds) {
-        const OrderItem* item = orderItemRepo->getObjPtrById(itemId);
+        const OrderItem* item = orderItemRepo_->getObjPtrById(itemId);
         if (item != nullptr) {
             total += item->getTotlaPrice();
         }
@@ -214,7 +214,7 @@ qreal OrderManageService::calculateOrderTotal(id_t orderId)
 
 qreal OrderManageService::calculateOrderItemTotal(id_t orderItemId)
 {
-    const OrderItem* item = orderItemRepo->getObjPtrById(orderItemId);
+    const OrderItem* item = orderItemRepo_->getObjPtrById(orderItemId);
     return item ? item->getTotlaPrice() : 0.0;
 }
 
@@ -225,19 +225,19 @@ int OrderManageService::getOrderItemCount(id_t orderId)
 
 bool OrderManageService::loadOrders(const QString& orderFilePath, const QString& orderItemFilePath)
 {
-    bool orderResult = orderRepo->loadDataFromFile(orderFilePath);
-    bool itemResult = orderItemRepo->loadDataFromFile(orderItemFilePath);
+    bool orderResult = orderRepo_->loadDataFromFile(orderFilePath);
+    bool itemResult = orderItemRepo_->loadDataFromFile(orderItemFilePath);
     return orderResult && itemResult;
 }
 
 bool OrderManageService::saveOrders()
 {
-    bool orderResult = orderRepo->saveToFile();
-    bool itemResult = orderItemRepo->saveToFile();
+    bool orderResult = orderRepo_->saveToFile();
+    bool itemResult = orderItemRepo_->saveToFile();
     return orderResult && itemResult;
 }
 
 int OrderManageService::getOrderCount()
 {
-    return orderRepo->getSize();
+    return orderRepo_->getSize();
 }

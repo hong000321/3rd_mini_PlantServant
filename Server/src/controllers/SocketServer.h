@@ -118,10 +118,10 @@ private slots:
     void onClientError(const QString &clientId, const QString &error);
 
 private:
-    QTcpServer *m_server;
-    QMap<QString, ClientConnection*> m_clients;        // clientId -> ClientConnection
-    QMap<QString, QString> m_userToClient;             // userId -> clientId
-    QMap<QString, QString> m_clientToUser;             // clientId -> userId
+    QTcpServer *server_;
+    QMap<QString, ClientConnection*> clients_;        // clientId -> ClientConnection
+    QMap<QString, QString> userToClient_;             // userId -> clientId
+    QMap<QString, QString> clientToUser_;             // clientId -> userId
 
     void setupConnections();
 };

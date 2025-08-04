@@ -52,16 +52,16 @@ private slots:
     void on_pushButton_del_clicked();
 
 private:
-    Ui::ServerMainWindow *ui;
-    ServerConfig *c;
+    Ui::ServerMainWindow *ui_;
+    ServerConfig *config_;
 
     // 서버 관련 멤버들
-    SocketServer *socketServer;
-    FileTransferServer *fileTransferServer;  // 추가
-    ProtocolController *protocolController;
-    QTimer *statusTimer;
-    bool isJsonServerRunning;   // 이름 변경
-    bool isFileServerRunning;   // 추가
+    SocketServer *socketServer_;
+    FileTransferServer *fileTransferServer_;  // 추가
+    ProtocolController *protocolController_;
+    QTimer *statusTimer_;
+    bool isJsonServerRunning_;   // 이름 변경
+    bool isFileServerRunning_;   // 추가
 
     void initializeServers();    // 이름 변경
     void setupServerConnections();

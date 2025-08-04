@@ -6,7 +6,7 @@
 
 class ChatJsonRepo : public JsonRepo<ChatUnit> {
 private:
-    static ChatJsonRepo* instance;  // 싱글톤 인스턴스
+    static ChatJsonRepo* instance_;  // 싱글톤 인스턴스
     ChatJsonRepo();
     ChatJsonRepo(const ChatJsonRepo&) = delete;
     ChatJsonRepo& operator=(const ChatJsonRepo&) = delete;

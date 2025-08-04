@@ -22,10 +22,10 @@ class LoginService : public QObject
     Q_OBJECT
 
 private:
-    static LoginService* instance;
-    UserManageService* userService;
-    QMap<QString, SessionInfo> activeSessions; // sessionId -> SessionInfo
-    QMap<id_t, QString> userSessions; // userId -> sessionId
+    static LoginService* instance_;
+    UserManageService* userService_;
+    QMap<QString, SessionInfo> activeSessions_; // sessionId -> SessionInfo
+    QMap<id_t, QString> userSessions_; // userId -> sessionId
 
     LoginService(QObject *parent = nullptr);
     LoginService(const LoginService&) = delete;

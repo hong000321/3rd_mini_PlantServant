@@ -17,7 +17,7 @@ public:
     explicit FileTransferConnection(QTcpSocket *socket, QObject *parent = nullptr);
     ~FileTransferConnection();
 
-    QString connectionId() const { return m_connectionId; }
+    QString connectionId() const { return connectionId_; }
     QHostAddress clientAddress() const;
     quint16 clientPort() const;
     bool isConnected() const;
@@ -37,10 +37,10 @@ private slots:
     void onSocketError(QAbstractSocket::SocketError error);
 
 private:
-    QTcpSocket *m_socket;
-    QString m_connectionId;
-    FileTransfer *m_fileTransfer;
-    QByteArray m_buffer;
+    QTcpSocket *socket_;
+    QString connectionId_;
+    FileTransfer *fileTransfer_;
+    QByteArray buffer_;
 
     void processFileRequest();
     void generateConnectionId();

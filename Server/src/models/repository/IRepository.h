@@ -16,18 +16,18 @@ struct CustomComparator {
 template <typename T>
 class IRepository {
 protected:
-    QVector<T*> vectorData; // T*로 변경 - 포인터 사용
-    QString filepath;
+    QVector<T*> vectorData_; // T*로 변경 - 포인터 사용
+    QString filepath_;
 
 public:
     IRepository() = default;
 
     virtual ~IRepository() {
         // 메모리 해제
-        for (T* obj : vectorData) {
+        for (T* obj : vectorData_) {
             delete obj;
         }
-        vectorData.clear();
+        vectorData_.clear();
     }
 
     /**
@@ -63,7 +63,7 @@ public:
         if(getObjPtrById(newObject->getId()) != nullptr){
             newObject->setId(getLastId()+1);
         }
-        vectorData.push_back(newObject);
+        vectorData_.push_back(newObject);
         appendToFile();
         return newObject->getId();
     }
@@ -74,7 +74,7 @@ public:
      * @return bool 성공 여부
      */
     bool update(const T& inputObject) {
-        for (T* object : vectorData) {
+        for (T* object : vectorData_) {
             if (object->getId() == inputObject.getId()) {
                 *object = inputObject;  // 값 복사
                 saveToFile();
@@ -90,10 +90,10 @@ public:
      * @return bool 성공 여부
      */
     bool removeById(int id) {
-        for(auto it = vectorData.begin(); it != vectorData.end(); ++it){
+        for(auto it = vectorData_.begin(); it != vectorData_.end(); ++it){
             if((*it)->getId() == id){
                 delete *it;  // 메모리 해제
-                vectorData.erase(it);
+                vectorData_.erase(it);
                 saveToFile();
                 return true;
             }
@@ -107,8 +107,8 @@ public:
      * @return T* 아이템 포인터 (없으면 nullptr)
      */
     T* getObjPtrById(int id) {
-        for(int i=0; i<vectorData.size() ; i++){
-            T* object = vectorData[i];
+        for(int i=0; i<vectorData_.size() ; i++){
+            T* object = vectorData_[i];
             if (object->getId() == id) {
                 return object;
             }
@@ -122,7 +122,7 @@ public:
      */
     QVector<T> getAllObjects() {
         QVector<T> result;
-        for (T* obj : vectorData) {
+        for (T* obj : vectorData_) {
             result.append(*obj);
         }
         return result;
@@ -133,7 +133,7 @@ public:
      * @return int 아이템 개수
      */
     int getSize(){
-        return vectorData.size();
+        return vectorData_.size();
     }
 
     /**
@@ -141,29 +141,29 @@ public:
      * @return int 마지막 ID
      */
     id_t getLastId(){
-        if(vectorData.size()==0)
+        if(vectorData_.size()==0)
             return 0;  // -1 대신 0 반환
-        return vectorData.back()->getId();
+        return vectorData_.back()->getId();
     }
 
     id_t getFirstId(){
-        if(vectorData.size()==0)
+        if(vectorData_.size()==0)
             return -1;
-        return vectorData.front()->getId();
+        return vectorData_.front()->getId();
     }
 
     id_t getNextId(id_t id){
         int index = getIndexById(id);
 
-        if(vectorData.size()==0)
+        if(vectorData_.size()==0)
             return -1;
-        if(vectorData.size()<=(index+1))
+        if(vectorData_.size()<=(index+1))
             return -2;
-        return vectorData[index+1]->getId();
+        return vectorData_[index+1]->getId();
     }
 
     void sortVector(){
-        std::sort(vectorData.begin(), vectorData.end(),
+        std::sort(vectorData_.begin(), vectorData_.end(),
                   [](const T* a, const T* b) {
                       return a->getId() < b->getId();
                   });
@@ -171,8 +171,8 @@ public:
 
 private:
     int getIndexById(int id) {
-        for(int i=0; i<vectorData.size() ; i++){
-            T* object = vectorData[i];
+        for(int i=0; i<vectorData_.size() ; i++){
+            T* object = vectorData_[i];
             if (object->getId() == id) {
                 return i;
             }

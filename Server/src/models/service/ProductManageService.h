@@ -13,8 +13,8 @@ class ProductManageService : public QObject
     Q_OBJECT
 
 private:
-    static ProductManageService* instance;
-    ProductJsonRepo* productRepo;
+    static ProductManageService* instance_;
+    ProductJsonRepo* productRepo_;
 
     ProductManageService(QObject *parent = nullptr);
     ProductManageService(const ProductManageService&) = delete;

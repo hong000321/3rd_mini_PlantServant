@@ -16,9 +16,9 @@ class ChatManageService : public QObject
     Q_OBJECT
 
 private:
-    static ChatManageService* instance;
-    ChatRoomJsonRepo* chatRoomRepo;
-    ChatJsonRepo* chatRepo;
+    static ChatManageService* instance_;
+    ChatRoomJsonRepo* chatRoomRepo_;
+    ChatJsonRepo* chatRepo_;
 
     ChatManageService(QObject *parent = nullptr);
     ChatManageService(const ChatManageService&) = delete;

@@ -5,14 +5,14 @@
 
 class OrderItem : Entity{
 private:
-    id_t itemId;
-    id_t productId;
-    qint32 quantity;
-    qreal unitPrice;  // 구매 당시 가격
+    id_t itemId_;
+    id_t productId_;
+    qint32 quantity_;
+    qreal unitPrice_;  // 구매 당시 가격
 public:
     OrderItem() = default;
     OrderItem(id_t id, id_t pid, qint32 quantity, qreal unitPrice)
-        : itemId(id), productId(pid), quantity(quantity), unitPrice(unitPrice) {}
+        : itemId_(id), productId_(pid), quantity_(quantity), unitPrice_(unitPrice) {}
 
     // getter
     id_t getId() const  override;

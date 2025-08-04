@@ -24,8 +24,8 @@ private slots:
     void on_lineEdit_email_textChanged(const QString &text);
 
 private:
-    Ui::EnrollAdminWindow *ui;
-    ProtocolController *m_protocolController;
+    Ui::EnrollAdminWindow *ui_;
+    ProtocolController *protocolController_;
 
     bool validateInput();
     void clearForm();

@@ -13,8 +13,8 @@ class UserManageService : public QObject
     Q_OBJECT
 
 private:
-    static UserManageService* instance;
-    UserJsonRepo* userRepo;
+    static UserManageService* instance_;
+    UserJsonRepo* userRepo_;
 
     UserManageService(QObject *parent = nullptr);
     UserManageService(const UserManageService&) = delete;

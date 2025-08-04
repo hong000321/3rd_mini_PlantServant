@@ -9,15 +9,15 @@
 
 class Order : Entity{
 private:
-    id_t orderId;
-    id_t userId;
-    QVector<id_t> orderItemIds;
-    QDateTime orderDate;
+    id_t orderId_;
+    id_t userId_;
+    QVector<id_t> orderItemIds_;
+    QDateTime orderDate_;
 
 public:
     Order() = default;
     Order(id_t id, id_t userId, QVector<id_t> orderItemIds, QDateTime orderDate)
-        : orderId(id), userId(userId), orderItemIds(orderItemIds), orderDate(orderDate) {}
+        : orderId_(id), userId_(userId), orderItemIds_(orderItemIds), orderDate_(orderDate) {}
 
     // getter
     id_t getId() const  override;

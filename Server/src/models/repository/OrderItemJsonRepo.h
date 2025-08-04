@@ -5,7 +5,7 @@
 
 class OrderItemJsonRepo : public JsonRepo<OrderItem> {
 private:
-    static OrderItemJsonRepo* instance;  // 싱글톤 인스턴스
+    static OrderItemJsonRepo* instance_;  // 싱글톤 인스턴스
     OrderItemJsonRepo();
     OrderItemJsonRepo(const OrderItemJsonRepo&) = delete;
     OrderItemJsonRepo& operator=(const OrderItemJsonRepo&) = delete;

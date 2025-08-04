@@ -5,15 +5,15 @@
 
 class ChatUnit : Entity{
 private:
-    id_t chatId;
-    id_t userId;
-    QDateTime chatTime;
-    QString chatStr;
+    id_t chatId_;
+    id_t userId_;
+    QDateTime chatTime_;
+    QString chatStr_;
 
 public:
     ChatUnit() = default;
     ChatUnit(id_t id, id_t userId, QDateTime chatTime, QString chatStr)
-        : chatId(id), userId(userId), chatTime(chatTime), chatStr(chatStr) {}
+        : chatId_(id), userId_(userId), chatTime_(chatTime), chatStr_(chatStr) {}
 
     // getter
     id_t getId() const  override;

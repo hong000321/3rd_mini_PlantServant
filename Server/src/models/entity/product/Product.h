@@ -6,29 +6,29 @@
 
 class Product : Entity{
 private:
-    id_t productId;
-    id_t roomId = -1;
-    QString name;
-    QString category;
-    qreal price;
-    qint32 stock;
-    QString imageFileName;  // 추가: 이미지 파일명
-    ChatRoomJsonRepo *roomRepo;
+    id_t productId_;
+    id_t roomId_ = -1;
+    QString name_;
+    QString category_;
+    qreal price_;
+    qint32 stock_;
+    QString imageFileName_;  // 추가: 이미지 파일명
+    ChatRoomJsonRepo *roomRepo_;
 
 public:
     // setter : constructor
     Product(){
-        roomRepo = ChatRoomJsonRepo::getInstance();
+        roomRepo_ = ChatRoomJsonRepo::getInstance();
     };
 
     Product(QString name, QString category, qreal price, qint32 stock)
-        : name(name), category(category), price(price), stock(stock) {
-        roomRepo = ChatRoomJsonRepo::getInstance();
+        : name_(name), category_(category), price_(price), stock_(stock) {
+        roomRepo_ = ChatRoomJsonRepo::getInstance();
     }
 
     Product(QString name, QString category, qreal price, qint32 stock, QString imageFileName)
-        : name(name), category(category), price(price), stock(stock), imageFileName(imageFileName) {
-        roomRepo = ChatRoomJsonRepo::getInstance();
+        : name_(name), category_(category), price_(price), stock_(stock), imageFileName_(imageFileName) {
+        roomRepo_ = ChatRoomJsonRepo::getInstance();
     }
 
     // getter

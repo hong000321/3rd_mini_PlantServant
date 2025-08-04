@@ -10,10 +10,10 @@ FileTransfer::FileTransfer(QTcpSocket *socket, QObject *parent)
     , m_totalSendBytes(0)
     , m_sentBytes(0)
     , m_blockSize(4096)  // 4KB 블록
-    , m_receiveFile(nullptr)
-    , m_totalReceiveBytes(0)
-    , m_receivedBytes(0)
-    , m_receiveState(WaitingForHeader)
+    , receiveFile_(nullptr)
+    , totalReceiveBytes_(0)
+    , receivedBytes_(0)
+    , receiveState_(WaitingForHeader)
 {
     connect(m_sendTimer, &QTimer::timeout, this, &FileTransfer::sendNextBlock);
     m_sendTimer->setSingleShot(true);
@@ -105,75 +105,75 @@ void FileTransfer::sendNextBlock()
 
 void FileTransfer::processFileData(const QByteArray &data)
 {
-    m_receiveBuffer.append(data);
+    receiveBuffer_.append(data);
 
-    while (!m_receiveBuffer.isEmpty()) {
-        if (m_receiveState == WaitingForHeader) {
+    while (!receiveBuffer_.isEmpty()) {
+        if (receiveState_ == WaitingForHeader) {
             // 헤더 크기 확인 (최소 24바이트: 8+8+최소문자열)
-            if (m_receiveBuffer.size() < 24) {
+            if (receiveBuffer_.size() < 24) {
                 break;
             }
 
             QString fileName;
             qint64 fileSize;
 
-            if (!parseFileHeader(m_receiveBuffer, fileName, fileSize)) {
+            if (!parseFileHeader(receiveBuffer_, fileName, fileSize)) {
                 emit fileReceiveFailed("Invalid file header");
                 cleanupReceive();
                 return;
             }
 
             // 헤더 파싱 성공 - 파일 수신 준비
-            m_receiveFileName = fileName;
-            m_totalReceiveBytes = fileSize;
-            m_receivedBytes = 0;
+            receiveFileName_ = fileName;
+            totalReceiveBytes_ = fileSize;
+            receivedBytes_ = 0;
 
             // 파일 생성
-            if (m_receiveFile) {
-                delete m_receiveFile;
+            if (receiveFile_) {
+                delete receiveFile_;
             }
 
-            QFileInfo fileInfo(m_receiveFileName);
-            m_receiveFile = new QFile(fileInfo.fileName());
+            QFileInfo fileInfo(receiveFileName_);
+            receiveFile_ = new QFile(fileInfo.fileName());
 
-            if (!m_receiveFile->open(QFile::WriteOnly)) {
-                emit fileReceiveFailed("Cannot create file: " + m_receiveFile->errorString());
+            if (!receiveFile_->open(QFile::WriteOnly)) {
+                emit fileReceiveFailed("Cannot create file: " + receiveFile_->errorString());
                 cleanupReceive();
                 return;
             }
 
-            m_receiveState = WaitingForData;
-            qDebug() << "File receive started:" << m_receiveFileName << "Size:" << m_totalReceiveBytes;
-            emit fileReceiveStarted(m_receiveFileName, m_totalReceiveBytes);
+            receiveState_ = WaitingForData;
+            qDebug() << "File receive started:" << receiveFileName_ << "Size:" << totalReceiveBytes_;
+            emit fileReceiveStarted(receiveFileName_, totalReceiveBytes_);
         }
-        else if (m_receiveState == WaitingForData) {
+        else if (receiveState_ == WaitingForData) {
             // 파일 데이터 수신
-            qint64 remainingBytes = m_totalReceiveBytes - m_receivedBytes;
-            qint64 bytesToWrite = qMin(static_cast<qint64>(m_receiveBuffer.size()), remainingBytes);
+            qint64 remainingBytes = totalReceiveBytes_ - receivedBytes_;
+            qint64 bytesToWrite = qMin(static_cast<qint64>(receiveBuffer_.size()), remainingBytes);
 
             if (bytesToWrite <= 0) {
                 break;
             }
 
-            QByteArray fileData = m_receiveBuffer.left(bytesToWrite);
-            m_receiveBuffer.remove(0, bytesToWrite);
+            QByteArray fileData = receiveBuffer_.left(bytesToWrite);
+            receiveBuffer_.remove(0, bytesToWrite);
 
-            qint64 written = m_receiveFile->write(fileData);
+            qint64 written = receiveFile_->write(fileData);
             if (written != bytesToWrite) {
-                emit fileReceiveFailed("File write error: " + m_receiveFile->errorString());
+                emit fileReceiveFailed("File write error: " + receiveFile_->errorString());
                 cleanupReceive();
                 return;
             }
 
-            m_receivedBytes += written;
-            emit fileReceiveProgress(m_receivedBytes, m_totalReceiveBytes);
+            receivedBytes_ += written;
+            emit fileReceiveProgress(receivedBytes_, totalReceiveBytes_);
 
-            if (m_receivedBytes >= m_totalReceiveBytes) {
+            if (receivedBytes_ >= totalReceiveBytes_) {
                 // 수신 완료
-                qDebug() << "File receive completed:" << m_receiveFileName;
-                emit fileReceiveCompleted(m_receiveFileName);
+                qDebug() << "File receive completed:" << receiveFileName_;
+                emit fileReceiveCompleted(receiveFileName_);
                 cleanupReceive();
-                m_receiveState = WaitingForHeader;
+                receiveState_ = WaitingForHeader;
             }
         }
     }
@@ -204,16 +204,16 @@ void FileTransfer::cleanupSend()
 
 void FileTransfer::cleanupReceive()
 {
-    if (m_receiveFile) {
-        m_receiveFile->close();
-        delete m_receiveFile;
-        m_receiveFile = nullptr;
+    if (receiveFile_) {
+        receiveFile_->close();
+        delete receiveFile_;
+        receiveFile_ = nullptr;
     }
 
-    m_receiveFileName.clear();
-    m_totalReceiveBytes = 0;
-    m_receivedBytes = 0;
-    m_receiveBuffer.clear();
+    receiveFileName_.clear();
+    totalReceiveBytes_ = 0;
+    receivedBytes_ = 0;
+    receiveBuffer_.clear();
 }
 
 QByteArray FileTransfer::createFileHeader(const QString &fileName, qint64 fileSize)
@@ -267,7 +267,7 @@ bool FileTransfer::parseFileHeader(const QByteArray &data, QString &fileName, qi
     fileSize = size;
 
     // 파싱된 헤더 크기만큼 버퍼에서 제거
-    m_receiveBuffer.remove(0, headerSize);
+    receiveBuffer_.remove(0, headerSize);
 
     return true;
 }

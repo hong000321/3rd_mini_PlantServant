@@ -5,14 +5,14 @@
 
 class ChatRoom : Entity{
 private:
-    id_t chatRoomId = -1;
-    QString chatRoomName;
-    QVector<id_t> userIds;
-    QVector<id_t> chatIds;
+    id_t chatRoomId_ = -1;
+    QString chatRoomName_;
+    QVector<id_t> userIds_;
+    QVector<id_t> chatIds_;
 public:
     ChatRoom() = default;
     ChatRoom(QString chatRoomName, QVector<id_t> userIds, QVector<id_t> chatIds)
-        : chatRoomName(chatRoomName), userIds(userIds), chatIds(chatIds) {}
+        : chatRoomName_(chatRoomName), userIds_(userIds), chatIds_(chatIds) {}
 
     // getter
     id_t getId() const  override;

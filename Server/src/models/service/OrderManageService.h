@@ -24,9 +24,9 @@ class OrderManageService : public QObject
     Q_OBJECT
 
 private:
-    static OrderManageService* instance;
-    OrderJsonRepo* orderRepo;
-    OrderItemJsonRepo* orderItemRepo;
+    static OrderManageService* instance_;
+    OrderJsonRepo* orderRepo_;
+    OrderItemJsonRepo* orderItemRepo_;
 
     OrderManageService(QObject *parent = nullptr);
     OrderManageService(const OrderManageService&) = delete;

@@ -1,4 +1,4 @@
-QT       += core gui network
+QT       += core gui network httpserver
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -23,6 +23,7 @@ CONTR_DIR = $${SRC_DIR}/controllers
 UTILS_DIR = $${SRC_DIR}/utils
 
 SOURCES += \
+    src/controllers/HttpRestServer.cpp \
     src/main.cpp \
     src/ServerConfig.cpp \
     src/controllers/FileTransferServer.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
     src/ServerConfig.h \
     src/controllers/FileTransferServer.h \
     src/controllers/FileTransfer.h \
+    src/controllers/HttpRestServer.h \
     src/controllers/ProtocolController.h \
     src/controllers/SocketServer.h \
     src/models/entity/Entity.h \
