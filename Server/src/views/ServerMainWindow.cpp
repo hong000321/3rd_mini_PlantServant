@@ -12,11 +12,9 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui_(new Ui::ServerMainWindow)
     , socketServer_(nullptr)
-    , fileTransferServer_(nullptr)
     , protocolController_(nullptr)
     , statusTimer_(new QTimer(this))
     , isJsonServerRunning_(false)
-    , isFileServerRunning_(false)
 {
     config_ = ServerConfig::getInstance();
     ui_->setupUi(this);
@@ -52,10 +50,6 @@ void ServerMainWindow::initializeServers()
     // JSON 서버 생성 (5105 포트)
     socketServer_ = new SocketServer(this);
 
-    // 파일 전송 서버 생성 (5115 포트)
-    fileTransferServer_ = new FileTransferServer(this);
-    fileTransferServer_->setImageDirectory("./../../data/product");
-
     // ProtocolController 생성 및 초기화
     protocolController_ = new ProtocolController(this);
     protocolController_->setSocketServer(socketServer_);
@@ -71,7 +65,6 @@ void ServerMainWindow::initializeServers()
 
     QString currentPath = QDir::currentPath();
     qDebug() << "현재 작업 디렉토리:" << currentPath;
-    qDebug() << "이미지 디렉토리:" << fileTransferServer_->imageDirectory();
     qDebug() << config_->userFilePath << Qt::endl <<
         config_->productFilePath << Qt::endl <<
         config_->orderFilePath << Qt::endl <<
@@ -105,22 +98,6 @@ void ServerMainWindow::setupServerConnections()
             this, &ServerMainWindow::onUserLoggedOut);
     connect(socketServer_, &SocketServer::errorOccurred,
             this, &ServerMainWindow::onJsonServerError);
-
-    // 파일 서버 시그널 연결
-    connect(fileTransferServer_, &FileTransferServer::serverStarted,
-            this, &ServerMainWindow::onFileServerStarted);
-    connect(fileTransferServer_, &FileTransferServer::serverStopped,
-            this, &ServerMainWindow::onFileServerStopped);
-    connect(fileTransferServer_, &FileTransferServer::clientConnected,
-            this, &ServerMainWindow::onFileClientConnected);
-    connect(fileTransferServer_, &FileTransferServer::clientDisconnected,
-            this, &ServerMainWindow::onFileClientDisconnected);
-    connect(fileTransferServer_, &FileTransferServer::fileTransferCompleted,
-            this, &ServerMainWindow::onFileTransferCompleted);
-    connect(fileTransferServer_, &FileTransferServer::fileTransferFailed,
-            this, &ServerMainWindow::onFileTransferFailed);
-    connect(fileTransferServer_, &FileTransferServer::errorOccurred,
-            this, &ServerMainWindow::onFileServerError);
 
     // JSON 서버와 ProtocolController 연결
     connect(socketServer_, &SocketServer::jsonDataReceived,
@@ -164,14 +141,6 @@ bool ServerMainWindow::startServers()
         logMessage("❌ JSON 서버 시작 실패 (포트 5105)");
         return false;
     }
-
-    // 파일 전송 서버 시작 (5115 포트)
-    if (!fileTransferServer_->startServer(address, 5115)) {
-        logMessage("❌ 파일 전송 서버 시작 실패 (포트 5115)");
-        socketServer_->stopServer(); // JSON 서버도 중지
-        return false;
-    }
-
     return true;
 }
 
@@ -179,9 +148,6 @@ void ServerMainWindow::stopServers()
 {
     if (socketServer_ && isJsonServerRunning_) {
         socketServer_->stopServer();
-    }
-    if (fileTransferServer_ && isFileServerRunning_) {
-        fileTransferServer_->stopServer();
     }
 }
 
@@ -229,60 +195,15 @@ void ServerMainWindow::onJsonServerError(const QString &error)
     logMessage("🔥 JSON 서버 오류: " + error);
 }
 
-// 파일 서버 관련 슬롯들
-void ServerMainWindow::onFileServerStarted(const QHostAddress &address, quint16 port)
-{
-    isFileServerRunning_ = true;
-    logMessage(QString("✅ 파일 전송 서버가 시작되었습니다: %1:%2").arg(address.toString()).arg(port));
-    updateUI();
-}
-
-void ServerMainWindow::onFileServerStopped()
-{
-    isFileServerRunning_ = false;
-    logMessage("🛑 파일 전송 서버가 중지되었습니다.");
-    updateUI();
-}
-
-void ServerMainWindow::onFileClientConnected(const QString &connectionId, const QHostAddress &address)
-{
-    logMessage(QString("📁 파일 클라이언트 연결: %1 (%2)").arg(connectionId).arg(address.toString()));
-}
-
-void ServerMainWindow::onFileClientDisconnected(const QString &connectionId)
-{
-    logMessage(QString("📁 파일 클라이언트 연결 해제: %1").arg(connectionId));
-}
-
-void ServerMainWindow::onFileTransferCompleted(const QString &connectionId, const QString &fileName)
-{
-    logMessage(QString("📤 파일 전송 완료: %1 → %2").arg(fileName).arg(connectionId));
-}
-
-void ServerMainWindow::onFileTransferFailed(const QString &connectionId, const QString &error)
-{
-    logMessage(QString("📤 파일 전송 실패: %1 - %2").arg(connectionId).arg(error));
-}
-
-void ServerMainWindow::onFileServerError(const QString &error)
-{
-    logMessage("🔥 파일 서버 오류: " + error);
-}
-
 void ServerMainWindow::updateServerStatus()
 {
-    if ((isJsonServerRunning_ || isFileServerRunning_)) {
+    if ((isJsonServerRunning_)) {
         QString statusInfo = "📊 서버 상태";
 
         if (isJsonServerRunning_ && socketServer_) {
             int clientCount = socketServer_->getClientCount();
             int userCount = socketServer_->getLoggedInUserCount();
             statusInfo += QString(" - JSON: 연결 %1개, 로그인 %2명").arg(clientCount).arg(userCount);
-        }
-
-        if (isFileServerRunning_ && fileTransferServer_) {
-            int fileConnections = fileTransferServer_->getConnectionCount();
-            statusInfo += QString(" - 파일: 연결 %1개").arg(fileConnections);
         }
 
         // 상세 정보 추가 (5분마다)
@@ -306,7 +227,7 @@ void ServerMainWindow::updateUI()
 {
     // 제목 업데이트
     QString title = "BlueButton Server";
-    // if (isJsonServerRunning_ || isFileServerRunning_) {
+    // if (isJsonServerRunning_ ) {
     //     title += " - Running";
     //     if (isJsonServerRunning_ && socketServer_) {
     //         int userCount = socketServer_->getLoggedInUserCount();
@@ -314,11 +235,6 @@ void ServerMainWindow::updateUI()
     //                      .arg(socketServer_->serverAddress().toString())
     //                      .arg(socketServer_->serverPort())
     //                      .arg(userCount);
-    //     }
-    //     if (isFileServerRunning_ && fileTransferServer_) {
-    //         title += QString(" [File:%1:%2]")
-    //         .arg(fileTransferServer_->serverAddress().toString())
-    //             .arg(fileTransferServer_->serverPort());
     //     }
     // }
     setWindowTitle(title);
@@ -372,7 +288,7 @@ void ServerMainWindow::on_pushButton_del_clicked()
 
 void ServerMainWindow::on_Run_pushButton_clicked()
 {
-    if (!isJsonServerRunning_ && !isFileServerRunning_) {
+    if (!isJsonServerRunning_) {
         // 서버들 시작
         if (startServers()) {
             ui_->Run_pushButton->setText("Stop");

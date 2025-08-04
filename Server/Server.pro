@@ -26,8 +26,6 @@ SOURCES += \
     src/controllers/HttpRestServer.cpp \
     src/main.cpp \
     src/ServerConfig.cpp \
-    src/controllers/FileTransferServer.cpp \
-    src/controllers/FileTransfer.cpp \
     src/controllers/ProtocolController.cpp \
     src/controllers/SocketServer.cpp \
     src/models/entity/Entity.cpp \
@@ -55,8 +53,6 @@ SOURCES += \
 
 HEADERS += \
     src/ServerConfig.h \
-    src/controllers/FileTransferServer.h \
-    src/controllers/FileTransfer.h \
     src/controllers/HttpRestServer.h \
     src/controllers/ProtocolController.h \
     src/controllers/SocketServer.h \
