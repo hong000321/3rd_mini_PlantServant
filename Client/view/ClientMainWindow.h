@@ -17,6 +17,19 @@ public:
     ClientMainWindow(QWidget *parent = nullptr);
     ~ClientMainWindow();
 
+private slots:
+
+    void on_button_myplant_clicked();
+
+    void on_button_writepost_clicked();
+
+
+    void on_button_back3_clicked();
+
+    void on_button_back2_clicked();
+
+    void on_button_back_clicked();
+
 private:
     Ui::ClientMainWindow *ui;
 };
