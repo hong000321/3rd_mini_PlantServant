@@ -1,0 +1,176 @@
+[
+    {
+        "chatIds": {
+            "chatId0": 165,
+            "chatId1": 166,
+            "chatId2": 168,
+            "chatId3": 220
+        },
+        "chatRoomId": 1,
+        "chatRoomName": "다빈치코드"
+    },
+    {
+        "chatIds": {
+            "chatId0": 138,
+            "chatId1": 184,
+            "chatId10": 209,
+            "chatId11": 210,
+            "chatId12": 211,
+            "chatId13": 212,
+            "chatId14": 213,
+            "chatId15": 214,
+            "chatId16": 215,
+            "chatId17": 216,
+            "chatId18": 221,
+            "chatId2": 185,
+            "chatId3": 186,
+            "chatId4": 187,
+            "chatId5": 188,
+            "chatId6": 202,
+            "chatId7": 203,
+            "chatId8": 207,
+            "chatId9": 208
+        },
+        "chatRoomId": 2,
+        "chatRoomName": "할리갈리"
+    },
+    {
+        "chatIds": {
+            "chatId0": 136,
+            "chatId1": 137,
+            "chatId2": 217,
+            "chatId3": 222
+        },
+        "chatRoomId": 3,
+        "chatRoomName": "화이트채플"
+    },
+    {
+        "chatIds": {
+            "chatId0": 139,
+            "chatId1": 142,
+            "chatId2": 183,
+            "chatId3": 204,
+            "chatId4": 205,
+            "chatId5": 206,
+            "chatId6": 223
+        },
+        "chatRoomId": 4,
+        "chatRoomName": "아컴호러"
+    },
+    {
+        "chatIds": {
+            "chatId0": 224,
+            "chatId1": 225
+        },
+        "chatRoomId": 5,
+        "chatRoomName": "글룸헤이븐"
+    },
+    {
+        "chatIds": {
+            "chatId0": 133,
+            "chatId1": 141,
+            "chatId10": 195,
+            "chatId11": 196,
+            "chatId12": 226,
+            "chatId2": 143,
+            "chatId3": 182,
+            "chatId4": 189,
+            "chatId5": 190,
+            "chatId6": 191,
+            "chatId7": 192,
+            "chatId8": 193,
+            "chatId9": 194
+        },
+        "chatRoomId": 6,
+        "chatRoomName": "프로스트헤이븐"
+    },
+    {
+        "chatIds": {
+            "chatId0": 131,
+            "chatId1": 132,
+            "chatId2": 140,
+            "chatId3": 144,
+            "chatId4": 200,
+            "chatId5": 201,
+            "chatId6": 227
+        },
+        "chatRoomId": 7,
+        "chatRoomName": "히트"
+    },
+    {
+        "chatIds": {
+            "chatId0": 169,
+            "chatId1": 170,
+            "chatId10": 181,
+            "chatId11": 228,
+            "chatId2": 171,
+            "chatId3": 172,
+            "chatId4": 173,
+            "chatId5": 174,
+            "chatId6": 175,
+            "chatId7": 176,
+            "chatId8": 177,
+            "chatId9": 178
+        },
+        "chatRoomId": 8,
+        "chatRoomName": "어콰이어"
+    },
+    {
+        "chatIds": {
+            "chatId0": 197,
+            "chatId1": 198,
+            "chatId2": 199,
+            "chatId3": 229
+        },
+        "chatRoomId": 9,
+        "chatRoomName": "뱅"
+    },
+    {
+        "chatIds": {
+            "chatId0": 135,
+            "chatId1": 180,
+            "chatId2": 230
+        },
+        "chatRoomId": 10,
+        "chatRoomName": "아크노바"
+    },
+    {
+        "chatIds": {
+            "chatId0": 218,
+            "chatId1": 219,
+            "chatId2": 231
+        },
+        "chatRoomId": 11,
+        "chatRoomName": "텔레스트레이"
+    },
+    {
+        "chatIds": {
+            "chatId0": 134,
+            "chatId1": 145,
+            "chatId10": 154,
+            "chatId11": 155,
+            "chatId12": 156,
+            "chatId13": 157,
+            "chatId14": 158,
+            "chatId15": 159,
+            "chatId16": 160,
+            "chatId17": 161,
+            "chatId18": 162,
+            "chatId19": 163,
+            "chatId2": 146,
+            "chatId20": 164,
+            "chatId21": 167,
+            "chatId22": 179,
+            "chatId23": 232,
+            "chatId3": 147,
+            "chatId4": 148,
+            "chatId5": 149,
+            "chatId6": 150,
+            "chatId7": 151,
+            "chatId8": 152,
+            "chatId9": 153
+        },
+        "chatRoomId": 12,
+        "chatRoomName": "아줄"
+    }
+]
