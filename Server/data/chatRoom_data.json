@@ -3,11 +3,25 @@
         "chatIds": {
             "chatId0": 165,
             "chatId1": 166,
+            "chatId10": 241,
+            "chatId11": 242,
+            "chatId12": 243,
+            "chatId13": 244,
+            "chatId14": 245,
+            "chatId15": 246,
+            "chatId16": 247,
+            "chatId17": 248,
+            "chatId18": 249,
+            "chatId19": 250,
             "chatId2": 168,
+            "chatId20": 251,
             "chatId3": 220,
             "chatId4": 235,
             "chatId5": 236,
-            "chatId6": 237
+            "chatId6": 237,
+            "chatId7": 238,
+            "chatId8": 239,
+            "chatId9": 240
         },
         "chatRoomId": 1,
         "chatRoomName": "다빈치코드"

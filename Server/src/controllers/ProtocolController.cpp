@@ -3,6 +3,9 @@
 #include <QDebug>
 #include <QDateTime>
 #include <QUuid>
+#include <QDir>
+#include <QFile>
+#include <QRandomGenerator>
 
 ProtocolController::ProtocolController(QObject *parent)
     : QObject(parent)
@@ -456,6 +459,53 @@ QJsonObject ProtocolController::handlePostCreate(const QJsonObject &parameters, 
         id_t currentUserId = getCurrentUserId(clientId);
         if (newPost.getUserId() != currentUserId) {
             newPost.setUserId(currentUserId); // 현재 사용자로 강제 설정
+        }
+
+        // Base64 이미지 데이터가 있으면 파일로 저장
+        if (parameters.contains("imageBase64") && !parameters.value("imageBase64").toString().isEmpty()) {
+            QString base64Data = parameters.value("imageBase64").toString();
+            QString imageName = parameters.value("imageName").toString();
+
+            // 이미지 이름이 없으면 기본 이름 생성
+            if (imageName.isEmpty()) {
+                imageName = QString("post_%1_%2")
+                .arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"))
+                    .arg(QRandomGenerator::global()->bounded(1000, 9999));
+            }
+
+            // 확장자 제거 (있다면)
+            if (imageName.endsWith(".png", Qt::CaseInsensitive) ||
+                imageName.endsWith(".jpg", Qt::CaseInsensitive) ||
+                imageName.endsWith(".jpeg", Qt::CaseInsensitive)) {
+                imageName = imageName.left(imageName.lastIndexOf('.'));
+            }
+
+            QString imageFileName = imageName + ".png";
+            QString imagePath = QString("./../../data/post/%1").arg(imageFileName);
+
+            // Base64 데이터를 QByteArray로 변환
+            QByteArray imageData = QByteArray::fromBase64(base64Data.toUtf8());
+
+            // 디렉토리 생성 확인
+            QDir imageDir("./../../data/post/");
+            if (!imageDir.exists()) {
+                imageDir.mkpath(".");
+            }
+
+            // 이미지 파일로 저장
+            QFile imageFile(imagePath);
+            if (imageFile.open(QIODevice::WriteOnly)) {
+                imageFile.write(imageData);
+                imageFile.close();
+
+                // Post 객체에 이미지 경로 설정
+                newPost.setImagePath(imagePath);
+
+                qDebug() << "Image saved successfully:" << imagePath;
+            } else {
+                qDebug() << "Failed to save image file:" << imagePath;
+                return createErrorResponse("", "IMAGE_SAVE_FAILED", "Failed to save image file");
+            }
         }
 
         RaErrorCode result = postService_->createPost(newPost);

@@ -178,5 +178,14 @@
         "password": "0321",
         "strId": "hong",
         "userId": 25
+    },
+    {
+        "address": "하남",
+        "email": "absorbme@naver.com",
+        "level": 2,
+        "name": "조수은",
+        "password": "1201",
+        "strId": "sueun1201",
+        "userId": 26
     }
 ]
