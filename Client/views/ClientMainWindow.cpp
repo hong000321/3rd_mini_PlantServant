@@ -44,6 +44,12 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
             ui->chatting_room->appendPlainText(QString("[%1]: %2").arg(userName, chatStr));
         }
     });
+
+    connect(postService_, &PostService::postListReceived,
+            this, &ClientMainWindow::displayPostList);
+
+    connect(postService_, &PostService::postReceived,
+            this, &ClientMainWindow::showPost);
 }
 
 ClientMainWindow::~ClientMainWindow()
@@ -86,6 +92,7 @@ void ClientMainWindow::setUser(const QJsonObject& userData){
     chatService_->joinChatRoom(chatRoomId_, currentUser_.getId());
     chatService_->requestChatHistory(chatRoomId_);
 
+    postService_->requestPostList();
 }
 
 
@@ -106,6 +113,7 @@ void ClientMainWindow::on_button_save_clicked()
     post.setContent(content);
     post.setUserId(currentUser_.getId());
     post.setImageBase64(imageBase64_);
+    post.setUserName(currentUser_.getName());
 
     postService_->createPost(post);
     qDebug() << "📝 글 작성 요청 전송됨";
@@ -138,3 +146,57 @@ void ClientMainWindow::on_button_file_clicked()
     }
 }
 
+void ClientMainWindow::displayPostList(const QJsonArray& posts)
+{
+    QGridLayout* layout = ui->gridLayout;
+
+    QLayoutItem* child;
+    while ((child = layout->takeAt(0)) != nullptr) {
+        if (child->widget()) {
+            delete child->widget();
+        }
+        delete child;
+    }
+
+    int row = 0, col = 0;
+    int maxCols = 4; // 열 개수: 한 행에 2개씩 배치
+
+    for (const QJsonValue& val : posts) {
+        Post post;
+        post.fromJson(val.toObject());
+
+        PostWidget* widget = new PostWidget(post);
+        connect(widget, &PostWidget::postClicked, this, &ClientMainWindow::showPost);
+
+        layout->addWidget(widget, row, col);  // ✅ (행, 열) 위치에 배치
+
+        if (++col >= maxCols) {
+            col = 0;
+            ++row;
+        }
+    }
+}
+
+void ClientMainWindow::showPost(const Post& post)
+{
+    ui->post_title->setText(post.getTitle());
+    ui->post_content->setText(post.getContent());
+    ui->post_author_id->setText(post.getUserName());
+
+    if (!post.getImageBase64().isEmpty()){
+        QPixmap pixmap;
+
+        bool loaded = pixmap.loadFromData(QByteArray::fromBase64(post.getImageBase64().toLatin1()));
+        if (!loaded){
+            qDebug() << "이미지 로드 실패";
+        } else {
+            qDebug() << "이미지 로드 성공";
+        }
+        ui->post_image->setPixmap(pixmap.scaled(ui->post_image->size(), Qt::KeepAspectRatio));
+    } else {
+        ui->post_image->clear();
+    }
+
+    ui->stackedWidget->setCurrentWidget(ui->page_show_post);
+
+}

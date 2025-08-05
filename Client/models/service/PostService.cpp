@@ -23,6 +23,7 @@ PostService::PostService(ClientSocket* socket, QObject* parent)
 void PostService::createPost(const Post& post)
 {
     QJsonObject params = post.toJson();  // Post 객체 → JSON
+    qDebug() << "📤 서버에 보낼 JSON:" << QJsonDocument(params).toJson();
     QJsonObject message = socket_->createCommandMessage("create", "post", params);
     socket_->sendMessage(message);
 }
@@ -37,6 +38,7 @@ void PostService::requestPost(id_t postId) {
     params["postId"] = static_cast<int>(postId);
     QJsonObject message = socket_->createCommandMessage("get", "post", params);
     socket_->sendMessage(message);
+    qDebug() << "📤 GET 요청 전송:" << QJsonDocument(message).toJson();
 }
 
 void PostService::onPostCreated(const QJsonObject& post) {
@@ -47,6 +49,10 @@ void PostService::onPostListReceived(const QJsonArray& posts) {
     emit postListReceived(posts);
 }
 
-void PostService::onPostReceived(const QJsonObject& post) {
+void PostService::onPostReceived(const QJsonObject& postJson) {
+    qDebug() << "📥 서버에서 받은 post JSON:" << QJsonDocument(postJson).toJson();
+    Post post;
+    post.fromJson(postJson);
     emit postReceived(post);
 }
+

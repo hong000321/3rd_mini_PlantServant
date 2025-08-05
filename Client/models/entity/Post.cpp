@@ -17,6 +17,15 @@ id_t Post::getUserId() const {
     return userId_;
 }
 
+QString Post::getUserName() const {
+    return userName_;
+}
+
+QString Post::getImageBase64() const{
+    return imageBase64_;
+}
+
+
 QDateTime Post::getCreatedAt() const {
     return createdAt_;
 }
@@ -56,6 +65,11 @@ RaErrorCode Post::setUserId(id_t userId) {
     return Ra_Success;
 }
 
+RaErrorCode Post::setUserName(const QString& name){
+    userName_ = name;
+    return Ra_Success;
+}
+
 RaErrorCode Post::updateContent(const QString& newTitle, const QString& newContent) {
     if (newTitle.isEmpty() || newContent.isEmpty()) {
         return Ra_Domain_Unkown_Error;
@@ -66,8 +80,11 @@ RaErrorCode Post::updateContent(const QString& newTitle, const QString& newConte
     return Ra_Success;
 }
 
-QString Post::getImageBase64() const { return imageBase64_; }
-void Post::setImageBase64(const QString& base64) { imageBase64_ = base64; }
+
+RaErrorCode Post::setImageBase64(const QString& base64) {
+    imageBase64_ = base64;
+    return Ra_Success;
+}
 
 // json
 QJsonObject Post::toJson() const {
@@ -76,6 +93,7 @@ QJsonObject Post::toJson() const {
     jsonObject.insert("title", title_);
     jsonObject.insert("content", content_);
     jsonObject.insert("userId", userId_);
+    jsonObject.insert("userName", userName_);
     jsonObject.insert("createdAt", createdAt_.toString(Qt::ISODate));
     jsonObject.insert("updatedAt", updatedAt_.toString(Qt::ISODate));
     jsonObject.insert("imageBase64", imageBase64_);
@@ -87,6 +105,7 @@ RaErrorCode Post::fromJson(const QJsonObject& inputJson) {
     title_ = inputJson.value("title").toString();
     content_ = inputJson.value("content").toString();
     userId_ = inputJson.value("userId").toInteger();
+    userName_ = inputJson.value("userName").toString();
 
     QString createdAtStr = inputJson.value("createdAt").toString();
     QString updatedAtStr = inputJson.value("updatedAt").toString();

@@ -21,7 +21,8 @@ SOURCES += \
     models/service/UserService.cpp \
     views/ClientMainWindow.cpp \
     views/JoinMemberMainWindow.cpp \
-    views/LoginMainWindow.cpp
+    views/LoginMainWindow.cpp \
+    views/PostWidgetidget.cpp
 
 HEADERS += \
     controllers/ClientSocket.h \
@@ -36,7 +37,8 @@ HEADERS += \
     views/ClientMainWindow.h \
     views/JoinMemberMainWindow.h \
     views/LoginMainWindow.h \
-    utils/CustomErrorCodes.h
+    utils/CustomErrorCodes.h \
+    views/PostWidget.h
 
 
 INCLUDEPATH += \
@@ -47,7 +49,8 @@ INCLUDEPATH += \
 FORMS += \
     views/ClientMainWindow.ui \
     views/JoinMemberMainWindow.ui \
-    views/LoginMainWindow.ui
+    views/LoginMainWindow.ui \
+    views/PostWidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -541,6 +541,7 @@ void ClientSocket::handleResponse(const QJsonObject &response)
             }
         } else if (action == "get") {
             if (success) {
+                qDebug() << QJsonObject(data);
                 emit postReceived(data);
             }
         }
