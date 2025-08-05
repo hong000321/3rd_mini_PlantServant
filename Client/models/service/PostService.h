@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include "controllers/ClientSocket.h"
 #include "models/entity/Post.h"
+#include "QPixmap"
 
 #define id_t qint64
 
@@ -23,12 +24,13 @@ public:
 signals:
     void postCreated(const QJsonObject& post);
     void postListReceived(const QJsonArray& posts);
-    void postReceived(const QJsonObject& post);
+    void postReceived(const Post& post);
 
 private slots:
     void onPostCreated(const QJsonObject& post);
     void onPostListReceived(const QJsonArray& posts);
     void onPostReceived(const QJsonObject& post);
+
 
 private:
     ClientSocket* socket_;

@@ -11,6 +11,7 @@ private:
     QString title_;
     QString content_;
     id_t userId_;
+    QString userName_;
     QString imageBase64_;
     QDateTime createdAt_;
     QDateTime updatedAt_;
@@ -34,6 +35,7 @@ public:
     QString getTitle() const;
     QString getContent() const;
     id_t getUserId() const;
+    QString getUserName() const;
     QString getImageBase64() const;
     QDateTime getCreatedAt() const;
     QDateTime getUpdatedAt() const;
@@ -45,7 +47,8 @@ public:
     RaErrorCode setContent(const QString& content);
     RaErrorCode setUserId(id_t userId);
     RaErrorCode updateContent(const QString& newTitle, const QString& newContent);
-    void setImageBase64(const QString& base64);
+    RaErrorCode setImageBase64(const QString& base64);
+    RaErrorCode setUserName(const QString& name);
 
     // json
     QJsonObject toJson() const override;

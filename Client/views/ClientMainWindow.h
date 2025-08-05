@@ -7,6 +7,8 @@
 #include "models/service/ChatService.h"
 #include "models/service/PostService.h"
 #include "models/entity/Post.h"
+#include "views/PostWidget.h"
+
 #include "LoginMainWindow.h"
 
 #include <QMainWindow>
@@ -43,6 +45,10 @@ private slots:
     void on_button_save_clicked();
 
     void on_button_file_clicked();
+
+    void displayPostList(const QJsonArray& posts);
+
+    void showPost(const Post& post);
 
 private:
     Ui::ClientMainWindow *ui;

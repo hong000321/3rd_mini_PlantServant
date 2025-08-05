@@ -21,7 +21,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page_plant">
        <widget class="QLabel" name="label">
@@ -375,12 +375,12 @@
          <string>Back</string>
         </property>
        </widget>
-       <widget class="QWidget" name="layoutWidget">
+       <widget class="QWidget" name="">
         <property name="geometry">
          <rect>
-          <x>20</x>
-          <y>50</y>
-          <width>111</width>
+          <x>21</x>
+          <y>51</y>
+          <width>341</width>
           <height>40</height>
          </rect>
         </property>
