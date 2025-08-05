@@ -30,6 +30,9 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
 
     // 서버들 초기화
     initializeServers();
+    sensorDB_ = SensorDB::getInstance();
+    sensorDB_->initializeDatabase();
+    sensorDB_->createTables();
 
     // 상태 업데이트 타이머 설정
     connect(statusTimer_, &QTimer::timeout, this, &ServerMainWindow::updateServerStatus);

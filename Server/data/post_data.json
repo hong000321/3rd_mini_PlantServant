@@ -128,5 +128,35 @@
         "updatedAt": "2025-08-05T15:10:53",
         "userId": 22,
         "userName": "조수은"
+    },
+    {
+        "content": "토마토",
+        "createdAt": "2025-08-05T15:44:31",
+        "imagePath": "./../../data/post/post_20250805_154431_4554.png",
+        "postId": 14,
+        "title": "멋쟁이토마토",
+        "updatedAt": "2025-08-05T15:44:31",
+        "userId": 22,
+        "userName": "조수은"
+    },
+    {
+        "content": "input content",
+        "createdAt": "2025-08-05T15:49:08",
+        "imagePath": "./../../data/post/post_20250805_154908_4990.png",
+        "postId": 15,
+        "title": "testsetaaweifneifni",
+        "updatedAt": "2025-08-05T15:49:08",
+        "userId": 25,
+        "userName": "홍대오"
+    },
+    {
+        "content": "갱얼쥐",
+        "createdAt": "2025-08-05T15:51:02",
+        "imagePath": "./../../data/post/post_20250805_155102_1904.png",
+        "postId": 16,
+        "title": "titlesdafasdf",
+        "updatedAt": "2025-08-05T15:51:02",
+        "userId": 22,
+        "userName": "조수은"
     }
 ]
