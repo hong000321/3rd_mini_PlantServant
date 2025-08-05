@@ -38,7 +38,7 @@ void LoginMainWindow::on_pushButton_login_clicked()
 
 void LoginMainWindow::on_pushButton_register_clicked()
 {
-    register_->show();
+    register_->show(); //회원가입 창 넣기
 }
 
 void LoginMainWindow::onLoginSuccess(const QJsonObject &userData)

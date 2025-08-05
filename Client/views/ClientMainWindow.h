@@ -3,6 +3,8 @@
 
 #include "controllers/ClientSocket.h"
 #include "models/service/UserService.h"
+#include "models/entity/user.h"
+#include "models/service/ChatService.h"
 #include "LoginMainWindow.h"
 
 #include <QMainWindow>
@@ -18,8 +20,10 @@ class ClientMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit ClientMainWindow(ClientSocket* socket = nullptr, QWidget* parent = nullptr);
+    explicit ClientMainWindow(ClientSocket* socket, UserService* userService, QWidget* parent = nullptr);
     ~ClientMainWindow();
+
+    void setUser(const QJsonObject& userData);
 
 private slots:
 
@@ -33,10 +37,16 @@ private slots:
 
     void on_button_back_clicked();
 
+
 private:
     Ui::ClientMainWindow *ui;
     ClientSocket* socket_;
-    UserService* userService_;
     LoginMainWindow* loginMainWindow_;
+
+    UserService* userService_;
+    ChatService* chatService_;
+
+    User currentUser_;
+    id_t chatRoomId_ = 1; //전체채팅방 ID고정값
 };
 #endif // CLIENTMAINWINDOW_H
