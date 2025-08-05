@@ -546,6 +546,13 @@ void ClientSocket::handleResponse(const QJsonObject &response)
             }
         }
     }
+    else if (target == "plant") {
+        if (action == "get" && success) {
+            if (success) {
+                emit plantReceived(data);
+            }
+        }
+    }
 
     else {
         // 알 수 없는 target/action이거나 명확하지 않은 경우 데이터 기반 fallback

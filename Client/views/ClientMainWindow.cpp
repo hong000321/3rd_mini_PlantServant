@@ -13,9 +13,14 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
 {
     chatService_ = new ChatService(socket_, this);
     postService_ = new PostService(socket_, this);
+    plantService_ = new PlantService(socket_, this);
 
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
+
+    ui->input_chatting->setPlaceholderText("채팅을 입력하세요");
+    ui->input_title->setPlaceholderText("제목을 입력하세요");
+    ui->input_post->setPlaceholderText("내용을 입력하세요");
 
     //채팅 입력창 연결
     connect(ui->input_chatting, &QLineEdit::returnPressed, this, [=]() {
@@ -50,6 +55,9 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
 
     connect(postService_, &PostService::postReceived,
             this, &ClientMainWindow::showPost);
+
+    connect(plantService_, &PlantService::plantInfoReady,
+            this, &ClientMainWindow::updatePlantInfo);
 }
 
 ClientMainWindow::~ClientMainWindow()
@@ -91,8 +99,8 @@ void ClientMainWindow::setUser(const QJsonObject& userData){
 
     chatService_->joinChatRoom(chatRoomId_, currentUser_.getId());
     chatService_->requestChatHistory(chatRoomId_);
-
     postService_->requestPostList();
+    plantService_->requestPlantInfo(currentUser_.getId());
 }
 
 
@@ -199,4 +207,22 @@ void ClientMainWindow::showPost(const Post& post)
 
     ui->stackedWidget->setCurrentWidget(ui->page_show_post);
 
+}
+
+void ClientMainWindow::updatePlantInfo(const Plant& plant)
+{
+    // 🌿 온도
+    ui->bar_temp->setMinimum(0);
+    ui->bar_temp->setMaximum(80);
+    ui->bar_temp->setValue(static_cast<int>(plant.getTemperature()));
+    ui->bar_temp->setFormat(QString("%1 °C").arg(plant.getTemperature(), 0, 'f', 1));
+
+    // 💧 습도
+    ui->bar_humi->setMinimum(0);
+    ui->bar_humi->setMaximum(100);
+    ui->bar_humi->setValue(plant.getHumidity());
+    ui->bar_humi->setFormat(QString("%1 %").arg(plant.getHumidity()));
+
+    // 🌼 별명 등 다른 정보 있으면 여기에
+    ui->label_myplantname->setText(plant.getNickname());
 }
