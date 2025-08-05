@@ -1,4 +1,4 @@
-QT       += core gui network httpserver
+QT       += core gui network httpserver sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,10 +31,12 @@ SOURCES += \
     src/models/entity/Entity.cpp \
     src/models/entity/Plant.cpp \
     src/models/entity/Post.cpp \
+    src/models/entity/SensorData.cpp \
     src/models/repository/ChatJsonRepo.cpp \
     src/models/repository/ChatRoomJsonRepo.cpp \
     src/models/repository/PlantJsonRepo.cpp \
     src/models/repository/PostJsonRepo.cpp \
+    src/models/repository/SensorDB.cpp \
     src/models/service/ChatManageService.cpp \
     src/models/service/LoginService.cpp \
     src/models/service/PlantManageService.cpp \
@@ -56,10 +58,12 @@ HEADERS += \
     src/models/entity/Entity.h \
     src/models/entity/Plant.h \
     src/models/entity/Post.h \
+    src/models/entity/SensorData.h \
     src/models/repository/ChatJsonRepo.h \
     src/models/repository/ChatRoomJsonRepo.h \
     src/models/repository/PlantJsonRepo.h \
     src/models/repository/PostJsonRepo.h \
+    src/models/repository/SensorDB.h \
     src/models/service/ChatManageService.h \
     src/models/service/LoginService.h \
     src/models/service/PlantManageService.h \

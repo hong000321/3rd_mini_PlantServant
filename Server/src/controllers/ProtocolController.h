@@ -15,6 +15,7 @@
 #include "models/service/PostManageService.h"
 #include "models/service/ChatManageService.h"
 #include "models/service/loginService.h"
+#include "models/repository/SensorDB.h"
 
 // 전방 선언
 class SocketServer;
@@ -58,6 +59,8 @@ private:
     LoginService* loginService_;
     SocketServer* socketServer_;
 
+    SensorDB* sensorDB_;
+
     // 세션 관리
     QMap<QString, QString> clientSessions_; // clientId -> sessionId
 
@@ -83,6 +86,7 @@ private:
     QJsonObject handlePlantUpdate(const QJsonObject &parameters);
     QJsonObject handlePlantDelete(const QJsonObject &parameters);
     QJsonObject handlePlantSensorUpdate(const QJsonObject &parameters);
+    QJsonObject handlePlantSensorGet(const QJsonObject &parameters);
 
     // Post 관련 처리 (PostManageService 사용)
     QJsonObject handlePostList(const QJsonObject &parameters);

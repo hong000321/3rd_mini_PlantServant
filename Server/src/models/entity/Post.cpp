@@ -61,6 +61,11 @@ RaErrorCode Post::setImagePath(const QString& imagePath) {
     return Ra_Success;
 }
 
+RaErrorCode Post::setImageBase64(const QString& imageBase64){
+    imageBase64_ = imageBase64;
+    return Ra_Success;
+}
+
 RaErrorCode Post::setUserId(id_t userId) {
     if (userId < 0) {
         return Ra_Domain_Unkown_Error;

@@ -18,6 +18,8 @@ ProtocolController::ProtocolController(QObject *parent)
     plantService_ = PlantManageService::getInstance();
     postService_ = PostManageService::getInstance();
 
+    sensorDB_ = SensorDB::getInstance();
+
     // 채팅 관련 시그널 연결
     connect(chatService_, &ChatManageService::messageSent,
             this, [this](id_t chatRoomId, id_t chatId) {
@@ -377,6 +379,18 @@ QJsonObject ProtocolController::handlePlantSensorUpdate(const QJsonObject &param
     return createErrorResponse("", "SENSOR_UPDATE_FAILED", "Failed to update sensor data");
 }
 
+
+QJsonObject ProtocolController::handlePlantSensorGet(const QJsonObject &parameters){
+    id_t plantId = parameters.value("plantId").toInteger();
+
+    const Plant* plant = plantService_->getPlantById(plantId);
+    if (plant) {
+        return createResponse("", "success", 200, "Plant found", plantToJson(plant));
+    }
+
+    return createErrorResponse("", "PLANT_NOT_FOUND", "Plant not found");
+}
+
 // Post 관련 메서드들
 QJsonObject ProtocolController::handlePostList(const QJsonObject &parameters)
 {
@@ -622,7 +636,7 @@ QJsonObject ProtocolController::postToJson(const Post* post)
     if (!post->getImagePath().isEmpty()) {
         QString imageBase64 = postService_->getPostImageAsBase64(post->getId());
         if (!imageBase64.isEmpty()) {
-            jsonObj.insert("imageData", imageBase64);
+            jsonObj.insert("imageBase64", imageBase64);
             qint64 imageSize = postService_->getImageFileSize(post->getImagePath());
             jsonObj.insert("imageSize", imageSize);
         }
@@ -635,7 +649,7 @@ QJsonArray ProtocolController::vectorToJsonArray(const QVector<Post>& posts)
 {
     QJsonArray array;
     for (const Post& post : posts) {
-        QJsonObject postObj = post.toJson();
+        QJsonObject postObj = postToJson(&post);
 
         // 각 게시글에 작성자 이름 추가
         User *author = userService_->getUserById(post.getUserId());

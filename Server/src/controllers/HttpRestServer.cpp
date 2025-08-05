@@ -1,4 +1,5 @@
 #include "HttpRestServer.h"
+#include "models/repository/SensorDB.h"
 
 HttpRestServer::HttpRestServer(QObject *parent)
     : QObject(parent)
@@ -40,9 +41,11 @@ QHttpServerResponse HttpRestServer::postSensorData(const QHttpServerRequest &req
 
     QJsonObject obj = doc.object();
     double temp = obj["temperature"].toDouble();
-    double humi = obj["humidity"].toDouble();
+    int humi = obj["humidity"].toInt();
 
     //여기에 DB 저장 또는 파일 기록 로직 추가 가능
+    SensorDB *sensorDB = SensorDB::getInstance();
+    sensorDB->addSensorData(1,temp,humi);
 
 
     qDebug() << "라즈베리파이로부터 수신:";

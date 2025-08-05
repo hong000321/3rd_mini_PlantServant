@@ -124,5 +124,14 @@
         "title": "장미허브",
         "updatedAt": "2025-08-05T11:17:46",
         "userId": 22
+    },
+    {
+        "content": "호냥이 ㅇㅇ",
+        "createdAt": "2025-08-05T14:06:11",
+        "imagePath": "./../../data/post/post_20250805_140611_7553.png",
+        "postId": 140707263287206,
+        "title": "고양이",
+        "updatedAt": "2025-08-05T14:06:11",
+        "userId": 22
     }
 ]
