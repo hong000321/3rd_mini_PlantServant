@@ -4,7 +4,10 @@
             "chatId0": 165,
             "chatId1": 166,
             "chatId2": 168,
-            "chatId3": 220
+            "chatId3": 220,
+            "chatId4": 235,
+            "chatId5": 236,
+            "chatId6": 237
         },
         "chatRoomId": 1,
         "chatRoomName": "다빈치코드"
@@ -52,7 +55,9 @@
             "chatId3": 204,
             "chatId4": 205,
             "chatId5": 206,
-            "chatId6": 223
+            "chatId6": 223,
+            "chatId7": 233,
+            "chatId8": 234
         },
         "chatRoomId": 4,
         "chatRoomName": "아컴호러"

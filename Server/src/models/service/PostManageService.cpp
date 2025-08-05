@@ -1,6 +1,8 @@
 #include "PostManageService.h"
 #include <QDebug>
 #include <algorithm>
+#include <QFile>
+#include <QFileInfo>
 
 PostManageService* PostManageService::instance_ = nullptr;
 
@@ -231,6 +233,42 @@ int PostManageService::getPostCount()
 {
     return postRepo_->getSize();
 }
+
+
+QString PostManageService::getPostImageAsBase64(id_t postId)
+{
+    const Post* post = postRepo_->getObjPtrById(postId);
+    if (!post) {
+        return QString();
+    }
+
+    QString imagePath = post->getImagePath();
+    if (imagePath.isEmpty()) {
+        return QString();
+    }
+
+    QFile imageFile(imagePath);
+    if (!imageFile.open(QIODevice::ReadOnly)) {
+        qDebug() << "Failed to open image file:" << imagePath;
+        return QString();
+    }
+
+    QByteArray imageData = imageFile.readAll();
+    imageFile.close();
+
+    return imageData.toBase64();
+}
+
+qint64 PostManageService::getImageFileSize(const QString& imagePath)
+{
+    if (imagePath.isEmpty()) {
+        return 0;
+    }
+
+    QFileInfo fileInfo(imagePath);
+    return fileInfo.exists() ? fileInfo.size() : 0;
+}
+
 
 void PostManageService::sortPosts(QVector<Post>& posts, PostSortType sortType)
 {

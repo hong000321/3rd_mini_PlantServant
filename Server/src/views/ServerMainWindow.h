@@ -7,6 +7,7 @@
 #include "ServerConfig.h"
 #include "controllers/SocketServer.h"
 #include "controllers/ProtocolController.h"
+#include "controllers/HttpRestServer.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -48,6 +49,8 @@ private:
     // 서버 관련 멤버들
     SocketServer *socketServer_;
     ProtocolController *protocolController_;
+    HttpRestServer *restServer_;
+
     QTimer *statusTimer_;
     bool isJsonServerRunning_;   // 이름 변경
 

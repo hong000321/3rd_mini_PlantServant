@@ -1,6 +1,7 @@
 #include "ServerMainWindow.h"
 #include "ui_server_main_window.h"
 #include "views/EnrollAdminWindow.h"
+
 #include <QDebug>
 #include <QMessageBox>
 #include <QDateTime>
@@ -12,6 +13,7 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     , ui_(new Ui::ServerMainWindow)
     , socketServer_(nullptr)
     , protocolController_(nullptr)
+    , restServer_(nullptr)
     , statusTimer_(new QTimer(this))
     , isJsonServerRunning_(false)
 {
@@ -59,6 +61,8 @@ void ServerMainWindow::initializeServers()
         config_->chatRoomFilePath,
         config_->chatFilePath
         );
+
+    restServer_ = new HttpRestServer(this);
 
     QString currentPath = QDir::currentPath();
     qDebug() << "현재 작업 디렉토리:" << currentPath;
@@ -133,10 +137,15 @@ bool ServerMainWindow::startServers()
     logMessage(QString("🚀 서버들 시작 시도... %1").arg(ipAddress));
 
     // JSON 서버 시작 (5105 포트)
-    if (!socketServer_->startServer(address, 5105)) {
-        logMessage("❌ JSON 서버 시작 실패 (포트 5105)");
+    quint16 port = static_cast<quint16>(ui_->Port_lineEdit_2->text().toInt());
+    if (!socketServer_->startServer(address, port)) {
+        logMessage(QString("❌ JSON 서버 시작 실패 (포트 %1)").arg(port));
         return false;
     }
+
+    // HTTP REST Server 시작 8080포트
+    restServer_->start(8080);
+
     return true;
 }
 

@@ -70,6 +70,10 @@ public:
     bool savePosts();
     int getPostCount();
 
+    // 이미지 전송용
+    QString getPostImageAsBase64(id_t postId);
+    qint64 getImageFileSize(const QString& imagePath);
+
 private:
     // 정렬 헬퍼 함수
     void sortPosts(QVector<Post>& posts, PostSortType sortType);

@@ -1,18 +1,52 @@
 #include "HttpRestServer.h"
 
 HttpRestServer::HttpRestServer(QObject *parent)
-    : QObject{parent}
-{}
-/*
-void HttpRestServer::start(quint16 port){
-
+    : QObject(parent)
+{
 }
 
-void HttpRestServer::setupRoutes(){
+void HttpRestServer::start(quint16 port)
+{
+    setupRoutes();
 
+    tcpServer_ = new QTcpServer(this);
+    if (!tcpServer_->listen(QHostAddress::Any, port) || !server_.bind(tcpServer_)) {
+        qCritical() << "[HTTP REST SERVER] 포트 바인딩 실패:" << port;
+        return;
+    }
+
+    qDebug() << "[HTTP REST SERVER] Listening on port" << tcpServer_->serverPort();
 }
 
-QHttpServerResponse HttpRestServer::postSensorData(){
+void HttpRestServer::setupRoutes()
+{
 
+    // 센서 데이터 POST 수신
+    server_.route("/rasp/sensor", QHttpServerRequest::Method::Post,
+                  [this](const QHttpServerRequest &req) {
+                      return postSensorData(req);
+                  });
 }
-*/
+
+QHttpServerResponse HttpRestServer::postSensorData(const QHttpServerRequest &request){
+    const QByteArray body = request.body();
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(body, &error);
+
+    if (error.error != QJsonParseError::NoError || !doc.isObject()) {
+        qWarning() << "[HTTP REST SERVER] JSON 파싱 오류:" << error.errorString();
+        return QHttpServerResponse("Invalid JSON", QHttpServerResponse::StatusCode::BadRequest);
+    }
+
+    QJsonObject obj = doc.object();
+    double temp = obj["temperature"].toDouble();
+    double humi = obj["humidity"].toDouble();
+
+    //여기에 DB 저장 또는 파일 기록 로직 추가 가능
+
+
+    qDebug() << "라즈베리파이로부터 수신:";
+    qDebug() << "  온도:" << temp << "  습도:" << humi;
+
+    return QHttpServerResponse("OK", QHttpServerResponse::StatusCode::Ok);
+}

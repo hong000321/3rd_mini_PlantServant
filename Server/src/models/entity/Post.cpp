@@ -13,6 +13,10 @@ QString Post::getContent() const {
     return content_;
 }
 
+QString Post::getImagePath() const {
+    return imagePath_;
+}
+
 id_t Post::getUserId() const {
     return userId_;
 }
@@ -48,6 +52,15 @@ RaErrorCode Post::setContent(const QString& content) {
     return Ra_Success;
 }
 
+RaErrorCode Post::setImagePath(const QString& imagePath) {
+    if (imagePath.isEmpty()) {
+        return Ra_Domain_Unkown_Error;
+    }
+    imagePath_ = imagePath;
+    updatedAt_ = QDateTime::currentDateTime();
+    return Ra_Success;
+}
+
 RaErrorCode Post::setUserId(id_t userId) {
     if (userId < 0) {
         return Ra_Domain_Unkown_Error;
@@ -72,6 +85,7 @@ QJsonObject Post::toJson() const {
     jsonObject.insert("postId", postId_);
     jsonObject.insert("title", title_);
     jsonObject.insert("content", content_);
+    jsonObject.insert("imagePath", imagePath_);
     jsonObject.insert("userId", userId_);
     jsonObject.insert("createdAt", createdAt_.toString(Qt::ISODate));
     jsonObject.insert("updatedAt", updatedAt_.toString(Qt::ISODate));
@@ -83,6 +97,7 @@ RaErrorCode Post::fromJson(const QJsonObject& inputJson) {
     postId_ = inputJson.value("postId").toInteger();
     title_ = inputJson.value("title").toString();
     content_ = inputJson.value("content").toString();
+    imagePath_ = inputJson.value("imagePath").toString();
     userId_ = inputJson.value("userId").toInteger();
 
     QString createdAtStr = inputJson.value("createdAt").toString();
