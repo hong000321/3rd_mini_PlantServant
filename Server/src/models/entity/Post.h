@@ -13,6 +13,7 @@ private:
     QString imagePath_;
     QString imageBase64_;
     id_t userId_;
+    QString userName_;
     QDateTime createdAt_;
     QDateTime updatedAt_;
 
@@ -35,6 +36,7 @@ public:
     QString getTitle() const;
     QString getContent() const;
     QString getImagePath() const;
+    QString getUserName() const;
     id_t getUserId() const;
     QDateTime getCreatedAt() const;
     QDateTime getUpdatedAt() const;
@@ -45,6 +47,7 @@ public:
     RaErrorCode setContent(const QString& content);
     RaErrorCode setImagePath(const QString& imagePath);
     RaErrorCode setImageBase64(const QString& imagePath);
+    RaErrorCode setUserName(const QString& userName);
     RaErrorCode setUserId(id_t userId);
     RaErrorCode updateContent(const QString& newTitle, const QString& newContent);
 
