@@ -88,5 +88,41 @@
         "title": "계절별 정원 관리 달력",
         "updatedAt": "2024-03-05T17:45:30",
         "userId": 4
+    },
+    {
+        "content": "방토키우고있어요",
+        "createdAt": "2025-08-05T10:51:56",
+        "imagePath": "",
+        "postId": 140707317747622,
+        "title": "방토에요",
+        "updatedAt": "2025-08-05T10:51:54",
+        "userId": 22
+    },
+    {
+        "content": "방토 귀여우니까용",
+        "createdAt": "2025-08-05T11:06:49",
+        "imagePath": "",
+        "postId": 140707317747622,
+        "title": "저 요즘 방토키워요",
+        "updatedAt": "2025-08-05T11:06:49",
+        "userId": 22
+    },
+    {
+        "content": "나 요즘 다육이 키우잔아 ^ ^",
+        "createdAt": "2025-08-05T11:08:37",
+        "imagePath": "",
+        "postId": 140707317747622,
+        "title": "다육이",
+        "updatedAt": "2025-08-05T11:08:37",
+        "userId": 22
+    },
+    {
+        "content": "맞나요",
+        "createdAt": "2025-08-05T11:17:46",
+        "imagePath": "./../../data/post/post_20250805_111746_6402.png",
+        "postId": 140707317747622,
+        "title": "장미허브",
+        "updatedAt": "2025-08-05T11:17:46",
+        "userId": 22
     }
 ]
