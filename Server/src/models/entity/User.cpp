@@ -5,6 +5,10 @@ id_t User::getId() const {
     return userId_;
 }
 
+id_t User::getPlantId() const {
+    return userId_;
+}
+
 QString User::getstrId() const {
     return strId_;
 }
@@ -27,6 +31,10 @@ bool User::isConnected() const {
 
 // setter
 void User::setId(id_t id){
+    userId_ = id;
+}
+
+void User::setPlantId(id_t id){
     userId_ = id;
 }
 
@@ -57,6 +65,7 @@ bool User::verifyLevel(PermissionLevel inputLevel){
 QJsonObject User::toJson() const {
     QJsonObject jsonObject;
     jsonObject.insert("userId",userId_);
+    jsonObject.insert("plantId",plantId_);
     jsonObject.insert("strId",strId_);
     jsonObject.insert("password",password_);
     jsonObject.insert("name",name_);
@@ -69,6 +78,7 @@ QJsonObject User::toJson() const {
 
 RaErrorCode User::fromJson(const QJsonObject& inputJson){
     userId_ = inputJson.value("userId").toInteger();
+    plantId_ = inputJson.value("plantId").toInteger();
     strId_ = inputJson.value("strId").toString();
     password_ = inputJson.value("password").toString();
     name_ = inputJson.value("name").toString();
