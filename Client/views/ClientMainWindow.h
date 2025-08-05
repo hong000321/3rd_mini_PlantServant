@@ -5,6 +5,8 @@
 #include "models/service/UserService.h"
 #include "models/entity/user.h"
 #include "models/service/ChatService.h"
+#include "models/service/PostService.h"
+#include "models/entity/Post.h"
 #include "LoginMainWindow.h"
 
 #include <QMainWindow>
@@ -38,6 +40,10 @@ private slots:
     void on_button_back_clicked();
 
 
+    void on_button_save_clicked();
+
+    void on_button_file_clicked();
+
 private:
     Ui::ClientMainWindow *ui;
     ClientSocket* socket_;
@@ -45,8 +51,10 @@ private:
 
     UserService* userService_;
     ChatService* chatService_;
+    PostService* postService_;
 
     User currentUser_;
     id_t chatRoomId_ = 1; //전체채팅방 ID고정값
+    QString imageBase64_;
 };
 #endif // CLIENTMAINWINDOW_H

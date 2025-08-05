@@ -530,6 +530,22 @@ void ClientSocket::handleResponse(const QJsonObject &response)
             }
         }
     }
+    else if (target == "post") {
+        if (action == "create") {
+            if (success) {
+                emit postCreated(data);
+            }
+        } else if (action == "list") {
+            if (success && data.contains("posts")) {
+                emit postListReceived(data.value("posts").toArray());
+            }
+        } else if (action == "get") {
+            if (success) {
+                emit postReceived(data);
+            }
+        }
+    }
+
     else {
         // 알 수 없는 target/action이거나 명확하지 않은 경우 데이터 기반 fallback
         if (data.contains("productId") && !data.contains("products")) {

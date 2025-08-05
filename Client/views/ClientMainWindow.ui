@@ -21,7 +21,7 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="page_plant">
        <widget class="QLabel" name="label">
@@ -210,7 +210,7 @@
          <string>input content</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="button_save">
         <property name="geometry">
          <rect>
           <x>280</x>

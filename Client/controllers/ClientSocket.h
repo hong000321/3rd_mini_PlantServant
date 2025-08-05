@@ -58,6 +58,11 @@ public:
     bool updateOrderItem(int itemId, int quantity, double unitPrice);
     bool removeOrderItem(int itemId);
 
+    // JSON 메시지 생성
+    QJsonObject createCommandMessage(const QString &action, const QString &target,
+                                     const QJsonObject &parameters = QJsonObject());
+    bool sendMessage(const QJsonObject &message);
+
 signals:
     void connected();
     void disconnected();
@@ -91,6 +96,10 @@ signals:
     void chatHistoryReceived(const QJsonArray &messages);
     void chatMessageReceived(const QJsonObject &message);
 
+    void postCreated(const QJsonObject &post);
+    void postListReceived(const QJsonArray &posts);
+    void postReceived(const QJsonObject &post);
+
 private slots:
     void onConnected();
     void onDisconnected();
@@ -112,11 +121,6 @@ private:
     void processIncomingData();
     QByteArray createJsonPacket(const QByteArray &jsonData);
     QString generateMessageId();
-
-    // JSON 메시지 생성
-    QJsonObject createCommandMessage(const QString &action, const QString &target,
-                                     const QJsonObject &parameters = QJsonObject());
-    bool sendMessage(const QJsonObject &message);
 
     // 응답 처리
     void handleResponse(const QJsonObject &response);

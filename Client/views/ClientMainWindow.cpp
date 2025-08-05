@@ -2,6 +2,8 @@
 #include "ui_ClientMainWindow.h"
 #include "LoginMainWindow.h"
 #include "ClientSocket.h"
+#include <QFile>
+#include <QFileDialog>
 
 ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userService, QWidget* parent)
     : QMainWindow(parent)
@@ -10,6 +12,7 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
     , userService_(userService)
 {
     chatService_ = new ChatService(socket_, this);
+    postService_ = new PostService(socket_, this);
 
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
@@ -85,4 +88,53 @@ void ClientMainWindow::setUser(const QJsonObject& userData){
 
 }
 
+
+
+//post 저장버튼 눌렀을때
+void ClientMainWindow::on_button_save_clicked()
+{
+    QString title = ui->input_title->text().trimmed();
+    QString content = ui->input_post->toPlainText().trimmed();
+
+    if (title.isEmpty() || content.isEmpty()) {
+        qDebug() << "❗ 제목이나 내용이 비어 있습니다.";
+        return;
+    }
+
+    Post post;
+    post.setTitle(title);
+    post.setContent(content);
+    post.setUserId(currentUser_.getId());
+    post.setImageBase64(imageBase64_);
+
+    postService_->createPost(post);
+    qDebug() << "📝 글 작성 요청 전송됨";
+
+    // UI 초기화 및 이동
+    ui->input_title->clear();
+    ui->input_post->clear();
+    ui->image_plant->clear();
+    imageBase64_.clear(); //다음작성을 위해 초기화
+    ui->stackedWidget->setCurrentWidget(ui->page_gallery);
+}
+
+
+//post file버튼 눌렀을때
+void ClientMainWindow::on_button_file_clicked()
+{
+    QString imagePath = QFileDialog::getOpenFileName(this, "이미지 선택", "", "Images (*.png *.jpg *.jpeg)");
+    if (!imagePath.isEmpty()) {
+        QFile file(imagePath);
+        if (file.open(QIODevice::ReadOnly)) {
+            QByteArray imageData = file.readAll();
+            imageBase64_ = QString::fromLatin1(imageData.toBase64());  // ✅ 멤버 변수에 저장
+            file.close();
+
+            QPixmap pixmap;
+            pixmap.loadFromData(imageData);
+            ui->image_plant->setPixmap(pixmap.scaled(ui->image_plant->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            qDebug() << "📎 이미지 선택 완료, base64 크기:" << imageBase64_.length();
+        }
+    }
+}
 

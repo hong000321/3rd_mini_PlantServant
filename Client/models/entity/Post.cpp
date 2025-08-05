@@ -66,6 +66,9 @@ RaErrorCode Post::updateContent(const QString& newTitle, const QString& newConte
     return Ra_Success;
 }
 
+QString Post::getImageBase64() const { return imageBase64_; }
+void Post::setImageBase64(const QString& base64) { imageBase64_ = base64; }
+
 // json
 QJsonObject Post::toJson() const {
     QJsonObject jsonObject;
@@ -75,7 +78,7 @@ QJsonObject Post::toJson() const {
     jsonObject.insert("userId", userId_);
     jsonObject.insert("createdAt", createdAt_.toString(Qt::ISODate));
     jsonObject.insert("updatedAt", updatedAt_.toString(Qt::ISODate));
-
+    jsonObject.insert("imageBase64", imageBase64_);
     return jsonObject;
 }
 
@@ -88,6 +91,9 @@ RaErrorCode Post::fromJson(const QJsonObject& inputJson) {
     QString createdAtStr = inputJson.value("createdAt").toString();
     QString updatedAtStr = inputJson.value("updatedAt").toString();
 
+    if (inputJson.contains("imageBase64")){
+        imageBase64_ = inputJson["imageBase64"].toString();
+    }
     if (!createdAtStr.isEmpty()) {
         createdAt_ = QDateTime::fromString(createdAtStr, Qt::ISODate);
     } else {
