@@ -1,5 +1,6 @@
 #include "HttpRestServer.h"
 #include "models/repository/SensorDB.h"
+#include "models/service/UserManageService.h"
 
 HttpRestServer::HttpRestServer(QObject *parent)
     : QObject(parent)
@@ -45,7 +46,14 @@ QHttpServerResponse HttpRestServer::postSensorData(const QHttpServerRequest &req
 
     //여기에 DB 저장 또는 파일 기록 로직 추가 가능
     SensorDB *sensorDB = SensorDB::getInstance();
-    sensorDB->addSensorData(1,temp,humi);
+    UserManageService *userService = UserManageService::getInstance();
+    QVector<User> users = userService->getAllUsers();
+
+    for(auto &user : users){
+
+        sensorDB->addSensorData(user.getPlantId(),temp,humi);
+    }
+
 
 
     qDebug() << "라즈베리파이로부터 수신:";
