@@ -230,4 +230,32 @@ void ClientMainWindow::updatePlantInfo(const Plant& plant)
 
     // 🌼 별명 등 다른 정보 있으면 여기에
     ui->label_myplantname->setText(plant.getNickname());
+    QString nickname = plant.getNickname();
+    qDebug() << "닉네임 출력" << nickname;
+
+    if (nickname == "초록이"){
+        // QString imagePath = QCoreApplication::applicationDirPath() + "/tomato.jpg";
+        QString imagePath = QCoreApplication::applicationDirPath() + "/../../../tomato.jpg";
+
+        QPixmap pixmap(imagePath);
+
+        if (!pixmap.isNull()) {
+            ui->image_myplant->setPixmap(
+                pixmap.scaled(ui->image_myplant->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation)
+                );
+        }
+    }
+
+    if (nickname == "고무나무"){
+        QString imagePath = QCoreApplication::applicationDirPath() + "/../../../gomu.jpg";
+        QPixmap pixmap(imagePath);
+        qDebug() << "경로?" << imagePath;
+        qDebug() << "닉네임?" << nickname;
+
+        if (!pixmap.isNull()) {
+            ui->image_myplant->setPixmap(
+                pixmap.scaled(ui->image_myplant->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation)
+                );
+        }
+    }
 }
