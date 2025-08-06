@@ -21,7 +21,7 @@ PostWidget::PostWidget(const Post& post, QWidget* parent)
         imageLabel_->setText("No Image");
     }
 
-    QVBoxLayout* layout = new QVBoxLayout(this);
+    QGridLayout* layout = new QGridLayout(this);
     layout->addWidget(imageLabel_);
     layout->setContentsMargins(0, 0, 0, 0);
     setLayout(layout);

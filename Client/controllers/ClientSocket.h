@@ -100,6 +100,8 @@ signals:
     void postListReceived(const QJsonArray &posts);
     void postReceived(const QJsonObject &post);
 
+    void plantReceived(const QJsonObject &plant);
+
 private slots:
     void onConnected();
     void onDisconnected();

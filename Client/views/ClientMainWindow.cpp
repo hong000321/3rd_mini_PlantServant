@@ -13,9 +13,14 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
 {
     chatService_ = new ChatService(socket_, this);
     postService_ = new PostService(socket_, this);
+    plantService_ = new PlantService(socket_, this);
 
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
+
+    ui->input_chatting->setPlaceholderText("채팅을 입력하세요");
+    ui->input_title->setPlaceholderText("제목을 입력하세요");
+    ui->input_post->setPlaceholderText("내용을 입력하세요");
 
     //채팅 입력창 연결
     connect(ui->input_chatting, &QLineEdit::returnPressed, this, [=]() {
@@ -50,6 +55,10 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
 
     connect(postService_, &PostService::postReceived,
             this, &ClientMainWindow::showPost);
+
+    //plantInfoReady 시그널 받으면 -> updatePlantInfo
+    connect(plantService_, &PlantService::plantInfoReady,
+            this, &ClientMainWindow::updatePlantInfo);
 }
 
 ClientMainWindow::~ClientMainWindow()
@@ -59,7 +68,9 @@ ClientMainWindow::~ClientMainWindow()
 
 void ClientMainWindow::on_button_myplant_clicked()
 {
+    plantService_->requestPlantInfo(currentUser_.getId());
     ui->stackedWidget->setCurrentWidget(ui->page_plant);
+
 }
 
 
@@ -91,8 +102,8 @@ void ClientMainWindow::setUser(const QJsonObject& userData){
 
     chatService_->joinChatRoom(chatRoomId_, currentUser_.getId());
     chatService_->requestChatHistory(chatRoomId_);
-
     postService_->requestPostList();
+    //plantService_->requestPlantInfo(currentUser_.getId());
 }
 
 
@@ -123,6 +134,7 @@ void ClientMainWindow::on_button_save_clicked()
     ui->input_post->clear();
     ui->image_plant->clear();
     imageBase64_.clear(); //다음작성을 위해 초기화
+    postService_->requestPostList();
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
 }
 
@@ -148,14 +160,14 @@ void ClientMainWindow::on_button_file_clicked()
 
 void ClientMainWindow::displayPostList(const QJsonArray& posts)
 {
-    QGridLayout* layout = ui->gridLayout;
+    QGridLayout* layout = qobject_cast<QGridLayout*>(ui->gridLayout->layout());
 
-    QLayoutItem* child;
-    while ((child = layout->takeAt(0)) != nullptr) {
-        if (child->widget()) {
-            delete child->widget();
+    QLayoutItem* item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            delete item->widget();
         }
-        delete child;
+        delete item;
     }
 
     int row = 0, col = 0;
@@ -166,6 +178,7 @@ void ClientMainWindow::displayPostList(const QJsonArray& posts)
         post.fromJson(val.toObject());
 
         PostWidget* widget = new PostWidget(post);
+
         connect(widget, &PostWidget::postClicked, this, &ClientMainWindow::showPost);
 
         layout->addWidget(widget, row, col);  // ✅ (행, 열) 위치에 배치
@@ -199,4 +212,22 @@ void ClientMainWindow::showPost(const Post& post)
 
     ui->stackedWidget->setCurrentWidget(ui->page_show_post);
 
+}
+
+void ClientMainWindow::updatePlantInfo(const Plant& plant)
+{
+    // 🌿 온도
+    ui->bar_temp->setMinimum(0);
+    ui->bar_temp->setMaximum(80);
+    ui->bar_temp->setValue(static_cast<int>(plant.getTemperature()));
+    ui->bar_temp->setFormat(QString("%1 °C").arg(plant.getTemperature(), 0, 'f', 1));
+
+    // 💧 습도
+    ui->bar_humi->setMinimum(0);
+    ui->bar_humi->setMaximum(100);
+    ui->bar_humi->setValue(plant.getHumidity());
+    ui->bar_humi->setFormat(QString("%1 %").arg(plant.getHumidity()));
+
+    // 🌼 별명 등 다른 정보 있으면 여기에
+    ui->label_myplantname->setText(plant.getNickname());
 }

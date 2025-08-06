@@ -8,6 +8,7 @@
 #include "models/service/PostService.h"
 #include "models/entity/Post.h"
 #include "views/PostWidget.h"
+#include "models/service/PlantService.h"
 
 #include "LoginMainWindow.h"
 
@@ -50,6 +51,8 @@ private slots:
 
     void showPost(const Post& post);
 
+    void updatePlantInfo(const Plant& plant);
+
 private:
     Ui::ClientMainWindow *ui;
     ClientSocket* socket_;
@@ -58,6 +61,7 @@ private:
     UserService* userService_;
     ChatService* chatService_;
     PostService* postService_;
+    PlantService* plantService_;
 
     User currentUser_;
     id_t chatRoomId_ = 1; //전체채팅방 ID고정값

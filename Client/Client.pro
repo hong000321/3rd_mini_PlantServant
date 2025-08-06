@@ -17,6 +17,7 @@ SOURCES += \
     models/entity/Post.cpp \
     models/entity/User.cpp \
     models/service/ChatService.cpp \
+    models/service/PlantService.cpp \
     models/service/PostService.cpp \
     models/service/UserService.cpp \
     views/ClientMainWindow.cpp \
@@ -32,6 +33,7 @@ HEADERS += \
     models/entity/Post.h \
     models/entity/User.h \
     models/service/ChatService.h \
+    models/service/PlantService.h \
     models/service/PostService.h \
     models/service/UserService.h \
     views/ClientMainWindow.h \
