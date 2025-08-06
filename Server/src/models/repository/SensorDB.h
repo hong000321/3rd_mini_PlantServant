@@ -36,7 +36,7 @@ public:
     SensorData getLatestSensorDataByPlant(id_t plantId) const;
 
 
-    bool initializeDatabase();
+    bool initializeDatabase(const QString dbFilePath);
     bool createTables();
 
 signals:

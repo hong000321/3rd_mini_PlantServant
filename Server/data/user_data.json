@@ -5,7 +5,7 @@
         "level": 2,
         "name": "홍대오",
         "password": "0321",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "hong00321",
         "userId": 0
     },
@@ -15,7 +15,7 @@
         "level": 1,
         "name": "시스템관리자",
         "password": "admin123",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "admin",
         "userId": 1
     },
@@ -25,7 +25,7 @@
         "level": 2,
         "name": "홍길동",
         "password": "user123",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "user001",
         "userId": 3
     },
@@ -35,7 +35,7 @@
         "level": 2,
         "name": "김철수",
         "password": "pass456",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "user002",
         "userId": 4
     },
@@ -45,7 +45,7 @@
         "level": 2,
         "name": "이영희",
         "password": "user789",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "user003",
         "userId": 5
     },
@@ -55,7 +55,7 @@
         "level": 1,
         "name": "부관리자",
         "password": "admin456",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "admin2",
         "userId": 6
     },
@@ -65,7 +65,7 @@
         "level": 2,
         "name": "최개발자",
         "password": "dev123",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "dev001",
         "userId": 7
     },
@@ -75,7 +75,7 @@
         "level": 0,
         "name": "임시사용자",
         "password": "guest123",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "guest001",
         "userId": 9
     },
@@ -85,7 +85,7 @@
         "level": 0,
         "name": "알수없는사용자",
         "password": "unknown",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "unknown",
         "userId": 10
     },
@@ -95,7 +95,7 @@
         "level": 2,
         "name": "박민수",
         "password": "userpass",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "user004",
         "userId": 11
     },
@@ -105,7 +105,7 @@
         "level": 1,
         "name": "정관리자",
         "password": "mgr456",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "manager01",
         "userId": 16
     },
@@ -115,7 +115,7 @@
         "level": 1,
         "name": "hi",
         "password": "hipass",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "hiUser",
         "userId": 17
     },
@@ -125,7 +125,7 @@
         "level": 2,
         "name": "hello",
         "password": "hellopass",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "helloUser",
         "userId": 18
     },
@@ -135,7 +135,7 @@
         "level": 2,
         "name": "테스트유저1",
         "password": "1234",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "testUser1",
         "userId": 19
     },
@@ -145,7 +145,7 @@
         "level": 2,
         "name": "한",
         "password": "qwe",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "qwe",
         "userId": 20
     },
@@ -155,7 +155,7 @@
         "level": 2,
         "name": "가가가",
         "password": "1234",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "testUser2",
         "userId": 21
     },
@@ -165,7 +165,7 @@
         "level": 2,
         "name": "조수은",
         "password": "1201",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "sueun",
         "userId": 22
     },
@@ -175,7 +175,7 @@
         "level": 1,
         "name": "홍대오",
         "password": "h00321",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "hong003212",
         "userId": 23
     },
@@ -185,7 +185,7 @@
         "level": 2,
         "name": "홍대오",
         "password": "0321",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "hong003213",
         "userId": 24
     },
@@ -195,7 +195,7 @@
         "level": 2,
         "name": "홍대오",
         "password": "0321",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "hong",
         "userId": 25
     },
@@ -205,7 +205,7 @@
         "level": 2,
         "name": "조수은",
         "password": "1201",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "sueun1201",
         "userId": 26
     },
@@ -215,7 +215,7 @@
         "level": 2,
         "name": "조수은",
         "password": "1201",
-        "plantId": 0,
+        "plantId": 1,
         "strId": "조수은",
         "userId": 27
     }

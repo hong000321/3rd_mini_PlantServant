@@ -28,8 +28,9 @@ void SensorDB::destroyInstance()
     }
 }
 
-bool SensorDB::initializeDatabase()
+bool SensorDB::initializeDatabase(const QString dbFilePath)
 {
+    dbFilePath_ = dbFilePath;
     // 데이터 디렉토리 생성 확인
     QFileInfo fileInfo(dbFilePath_);
     QDir dir = fileInfo.absoluteDir();
