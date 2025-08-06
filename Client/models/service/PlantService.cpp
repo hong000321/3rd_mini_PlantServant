@@ -9,6 +9,7 @@ PlantService::PlantService(ClientSocket* socket, QObject* parent)
             this, &PlantService::onPlantReceived);
 }
 
+//userId기반으로 plant 찾아서 받아옴
 void PlantService::requestPlantInfo(id_t userId)
 {
     QJsonObject params;

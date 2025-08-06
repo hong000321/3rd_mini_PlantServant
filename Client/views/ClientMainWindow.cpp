@@ -56,6 +56,7 @@ ClientMainWindow::ClientMainWindow(ClientSocket* socket, UserService* userServic
     connect(postService_, &PostService::postReceived,
             this, &ClientMainWindow::showPost);
 
+    //plantInfoReady 시그널 받으면 -> updatePlantInfo
     connect(plantService_, &PlantService::plantInfoReady,
             this, &ClientMainWindow::updatePlantInfo);
 }
@@ -67,7 +68,9 @@ ClientMainWindow::~ClientMainWindow()
 
 void ClientMainWindow::on_button_myplant_clicked()
 {
+    plantService_->requestPlantInfo(currentUser_.getId());
     ui->stackedWidget->setCurrentWidget(ui->page_plant);
+
 }
 
 
@@ -100,7 +103,7 @@ void ClientMainWindow::setUser(const QJsonObject& userData){
     chatService_->joinChatRoom(chatRoomId_, currentUser_.getId());
     chatService_->requestChatHistory(chatRoomId_);
     postService_->requestPostList();
-    plantService_->requestPlantInfo(currentUser_.getId());
+    //plantService_->requestPlantInfo(currentUser_.getId());
 }
 
 
@@ -131,6 +134,7 @@ void ClientMainWindow::on_button_save_clicked()
     ui->input_post->clear();
     ui->image_plant->clear();
     imageBase64_.clear(); //다음작성을 위해 초기화
+    postService_->requestPostList();
     ui->stackedWidget->setCurrentWidget(ui->page_gallery);
 }
 
@@ -156,14 +160,14 @@ void ClientMainWindow::on_button_file_clicked()
 
 void ClientMainWindow::displayPostList(const QJsonArray& posts)
 {
-    QGridLayout* layout = ui->gridLayout;
+    QGridLayout* layout = qobject_cast<QGridLayout*>(ui->gridLayout->layout());
 
-    QLayoutItem* child;
-    while ((child = layout->takeAt(0)) != nullptr) {
-        if (child->widget()) {
-            delete child->widget();
+    QLayoutItem* item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            delete item->widget();
         }
-        delete child;
+        delete item;
     }
 
     int row = 0, col = 0;
@@ -174,6 +178,7 @@ void ClientMainWindow::displayPostList(const QJsonArray& posts)
         post.fromJson(val.toObject());
 
         PostWidget* widget = new PostWidget(post);
+
         connect(widget, &PostWidget::postClicked, this, &ClientMainWindow::showPost);
 
         layout->addWidget(widget, row, col);  // ✅ (행, 열) 위치에 배치
