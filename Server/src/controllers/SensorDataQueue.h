@@ -22,7 +22,7 @@ public:
     static void destroyInstance();
 
     // 핵심 기능만
-    void enqueue(id_t plantId, double temperature, double humidity);
+    void enqueue(id_t plantId, double temperature, int humidity);
     bool tryDequeue(SensorData& data);
     bool isEmpty();
 };

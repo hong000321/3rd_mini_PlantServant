@@ -24,7 +24,7 @@ void SensorDataQueue::destroyInstance()
     }
 }
 
-void SensorDataQueue::enqueue(id_t plantId, double temperature, double humidity)
+void SensorDataQueue::enqueue(id_t plantId, double temperature, int humidity)
 {
     QMutexLocker locker(&mutex_);
 
