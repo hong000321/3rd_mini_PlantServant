@@ -44,14 +44,26 @@ QHttpServerResponse HttpRestServer::postSensorData(const QHttpServerRequest &req
     double temp = obj["temperature"].toDouble();
     int humi = obj["humidity"].toInt();
 
-    //여기에 DB 저장 또는 파일 기록 로직 추가 가능
-    SensorDB *sensorDB = SensorDB::getInstance();
+    // DB 저장 ,파일 기록 로직 추가 가능
+    // SensorDB *sensorDB = SensorDB::getInstance();
     UserManageService *userService = UserManageService::getInstance();
+    SensorDataQueue *sensorQueue = SensorDataQueue::getInstance();
+
     QVector<User> users = userService->getAllUsers();
 
     for(auto &user : users){
+        if (sensorQueue->enqueue(user.getPlantId(), temp, humi)) {
+            qDebug() << "[PRODUCER] 센서 데이터 큐에 추가:" << "Plant:" << user.getPlantId()
+                     << "Temp:" << temp << "Humidity:" << humi;
 
-        sensorDB->addSensorData(user.getPlantId(),temp,humi);
+            // 즉시 응답 (DB 저장을 기다리지 않음)
+            return QHttpServerResponse("OK", QHttpServerResponse::StatusCode::Ok);
+        } else {
+            qWarning() << "[PRODUCER] 큐가 가득참 - 데이터 추가 실패";
+            return QHttpServerResponse("Queue Full", QHttpServerResponse::StatusCode::ServiceUnavailable);
+        }
+        // sensorDB->addSensorData(user.getPlantId(),temp,humi);
+
     }
 
 

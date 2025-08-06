@@ -1,6 +1,7 @@
 #include "ServerMainWindow.h"
 #include "ui_server_main_window.h"
 #include "views/EnrollAdminWindow.h"
+#include "models/service/SensorProcessor.h"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -34,6 +35,10 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     sensorDB_->initializeDatabase("./../../data/sensor_data.db");
     sensorDB_->createTables();
 
+    // Sensor data 소비자 실행
+    SensorProcessor* sensorProcessor = SensorProcessor::getInstance();
+    sensorProcessor->start();
+
     // 상태 업데이트 타이머 설정
     connect(statusTimer_, &QTimer::timeout, this, &ServerMainWindow::updateServerStatus);
     statusTimer_->start(5000); // 5초마다 상태 업데이트
@@ -45,6 +50,8 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
 ServerMainWindow::~ServerMainWindow()
 {
     stopServers();
+    SensorProcessor::destroyInstance();
+
     delete ui_;
 }
 
