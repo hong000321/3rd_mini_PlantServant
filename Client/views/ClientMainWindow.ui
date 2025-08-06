@@ -21,132 +21,183 @@
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="page_plant">
-       <layout class="QVBoxLayout" name="verticalLayout_7">
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_3">
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QPushButton" name="button_back3">
-              <property name="minimumSize">
-               <size>
-                <width>100</width>
-                <height>50</height>
-               </size>
-              </property>
-              <property name="styleSheet">
-               <string>QPushButton { background-color: #88c999; color: white; border-radius: 5px; padding: 5px; }</string>
-              </property>
-              <property name="text">
-               <string>Back</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Orientation::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>218</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_7">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QLabel" name="label_myplant">
-                <property name="styleSheet">
-                 <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
-                </property>
-                <property name="text">
-                 <string>내 식물:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_myplantname">
-                <property name="styleSheet">
-                 <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
-                </property>
-                <property name="text">
-                 <string>이름</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_8">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QLabel" name="label_3">
-                <property name="styleSheet">
-                 <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
-                </property>
-                <property name="text">
-                 <string>온도</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QProgressBar" name="bar_temp">
-              <property name="styleSheet">
-               <string>QProgressBar { border: 1px solid #cfcfcf; border-radius: 8px; text-align: center; }QProgressBar::chunk { background-color: #f48fb1; border-radius: 8px; }</string>
-              </property>
-              <property name="value">
-               <number>24</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_5">
-              <item>
-               <widget class="QLabel" name="label_4">
-                <property name="styleSheet">
-                 <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
-                </property>
-                <property name="text">
-                 <string>습도</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <widget class="QProgressBar" name="bar_humi">
-              <property name="styleSheet">
-               <string>QProgressBar { border: 1px solid #cfcfcf; border-radius: 8px; text-align: center; }QProgressBar::chunk { background-color: #81d4fa; border-radius: 8px; }</string>
-              </property>
-              <property name="value">
-               <number>24</number>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-       </layout>
+       <widget class="QLabel" name="image_myplant">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>220</y>
+          <width>351</width>
+          <height>361</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>300</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>plantimage</string>
+        </property>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>11</x>
+          <y>11</y>
+          <width>351</width>
+          <height>89</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_6">
+         <item>
+          <widget class="QPushButton" name="button_back3">
+           <property name="minimumSize">
+            <size>
+             <width>100</width>
+             <height>50</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string>QPushButton { background-color: #88c999; color: white; border-radius: 5px; padding: 5px; }</string>
+           </property>
+           <property name="text">
+            <string>Back</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Orientation::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>218</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>11</x>
+          <y>106</y>
+          <width>351</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_7">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="QLabel" name="label_myplant">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
+             </property>
+             <property name="text">
+              <string>내 식물:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_myplantname">
+             <property name="styleSheet">
+              <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
+             </property>
+             <property name="text">
+              <string>이름</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>140</y>
+          <width>351</width>
+          <height>64</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_3">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
+             </property>
+             <property name="text">
+              <string>온도</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="bar_temp">
+             <property name="styleSheet">
+              <string>QProgressBar { border: 1px solid #cfcfcf; border-radius: 8px; text-align: center; }QProgressBar::chunk { background-color: #f48fb1; border-radius: 8px; }</string>
+             </property>
+             <property name="value">
+              <number>24</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <widget class="QLabel" name="label_4">
+             <property name="maximumSize">
+              <size>
+               <width>100</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string>QLabel { color: #2d6b2d; font-weight: bold; }</string>
+             </property>
+             <property name="text">
+              <string>습도</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QProgressBar" name="bar_humi">
+             <property name="styleSheet">
+              <string>QProgressBar { border: 1px solid #cfcfcf; border-radius: 8px; text-align: center; }QProgressBar::chunk { background-color: #81d4fa; border-radius: 8px; }</string>
+             </property>
+             <property name="value">
+              <number>24</number>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="QWidget" name="page_write_post">
        <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -382,7 +433,7 @@
        <widget class="QPlainTextEdit" name="chatting_room">
         <property name="minimumSize">
          <size>
-          <width>500</width>
+          <width>350</width>
           <height>0</height>
          </size>
         </property>
