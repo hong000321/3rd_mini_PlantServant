@@ -8,6 +8,7 @@
 #include "controllers/SocketServer.h"
 #include "controllers/ProtocolController.h"
 #include "controllers/HttpRestServer.h"
+#include "models/repository/SensorDB.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -50,6 +51,8 @@ private:
     SocketServer *socketServer_;
     ProtocolController *protocolController_;
     HttpRestServer *restServer_;
+
+    SensorDB *sensorDB_;
 
     QTimer *statusTimer_;
     bool isJsonServerRunning_;   // 이름 변경

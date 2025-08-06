@@ -7,6 +7,7 @@ enum PermissionLevel {UNKOWN_LEVEL, ADMIN_LEVEL, USER_LEVEL };
 class User : Entity{
 private:
     id_t userId_;
+    id_t plantId_;
     QString strId_;
     QString password_;
     QString name_;
@@ -21,6 +22,7 @@ public:
 
     // getter
     id_t getId() const override;
+    id_t getPlantId() const ;
     QString getstrId() const ;
     QString getName() const ;
     QString getEmail() const ;
@@ -29,6 +31,7 @@ public:
 
     // setter
     void setId(id_t id) override;
+    void setPlantId(id_t id);
     RaErrorCode connect();
     RaErrorCode disconnect();
 

@@ -57,9 +57,10 @@ public:
     id_t insert(const T& object) {
         T* newObject = new T(object);  // 복사 생성자 사용
         sortVector();
-        if(newObject->getId() < 0){
+        if(newObject->getId() < 0 || newObject->getId() > 100000){
             newObject->setId(getLastId()+1);
         }
+        qDebug() << "newObject Debug = " << newObject->getId();
         if(getObjPtrById(newObject->getId()) != nullptr){
             newObject->setId(getLastId()+1);
         }

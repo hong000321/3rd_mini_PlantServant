@@ -1,2 +1,107 @@
 [
+    {
+        "humidity": 38,
+        "nickname": "행복이",
+        "plantId": 1,
+        "temperature": 37.87,
+        "userId": 1
+    },
+    {
+        "humidity": 72,
+        "nickname": "초록이",
+        "plantId": 2,
+        "temperature": 25.2,
+        "userId": 1
+    },
+    {
+        "humidity": 45,
+        "nickname": "선인장친구",
+        "plantId": 3,
+        "temperature": 22.8,
+        "userId": 2
+    },
+    {
+        "humidity": 68,
+        "nickname": "몬스테라",
+        "plantId": 4,
+        "temperature": 24.1,
+        "userId": 2
+    },
+    {
+        "humidity": 70,
+        "nickname": "고무나무",
+        "plantId": 5,
+        "temperature": 26.3,
+        "userId": 3
+    },
+    {
+        "humidity": 75,
+        "nickname": "스파티필름",
+        "plantId": 6,
+        "temperature": 23.9,
+        "userId": 3
+    },
+    {
+        "humidity": 78,
+        "nickname": "아레카야자",
+        "plantId": 7,
+        "temperature": 25.7,
+        "userId": 4
+    },
+    {
+        "humidity": 55,
+        "nickname": "산세베리아",
+        "plantId": 8,
+        "temperature": 22.4,
+        "userId": 4
+    },
+    {
+        "humidity": 42,
+        "nickname": "다육이들",
+        "plantId": 9,
+        "temperature": 21.6,
+        "userId": 1
+    },
+    {
+        "humidity": 69,
+        "nickname": "멋쟁이토마토",
+        "plantId": 10,
+        "temperature": 24.8,
+        "userId": 22
+    },
+    {
+        "humidity": 73,
+        "nickname": "홍콩야자",
+        "plantId": 11,
+        "temperature": 26.1,
+        "userId": 22
+    },
+    {
+        "humidity": 66,
+        "nickname": "드라세나",
+        "plantId": 12,
+        "temperature": 23.3,
+        "userId": 4
+    },
+    {
+        "humidity": 71,
+        "nickname": "필로덴드론",
+        "plantId": 13,
+        "temperature": 25.4,
+        "userId": 25
+    },
+    {
+        "humidity": 74,
+        "nickname": "뱅갈고무나무",
+        "plantId": 14,
+        "temperature": 24.6,
+        "userId": 27
+    },
+    {
+        "humidity": 80,
+        "nickname": "틸란드시아",
+        "plantId": 15,
+        "temperature": 22.9,
+        "userId": 27
+    }
 ]

@@ -25,8 +25,6 @@ private:
     SensorDB(const SensorDB&) = delete;
     SensorDB& operator=(const SensorDB&) = delete;
 
-    bool initializeDatabase();
-    bool createTables();
 
 public:
     static SensorDB* getInstance();
@@ -36,6 +34,10 @@ public:
     // 기본 기능만
     RaErrorCode addSensorData(id_t plantId, double temperature, int humidity);
     SensorData getLatestSensorDataByPlant(id_t plantId) const;
+
+
+    bool initializeDatabase(const QString dbFilePath);
+    bool createTables();
 
 signals:
     void sensorDataAdded(const SensorData& data);

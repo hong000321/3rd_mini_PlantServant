@@ -69,7 +69,7 @@ bool ClientConnection::sendJsonData(const QJsonDocument &jsonDocument)
 
     if (success) {
         QString logId = isLoggedIn() ? QString("user:%1").arg(m_userId) : QString("client:%1").arg(m_clientId);
-        qDebug() << "JSON sent to" << logId << ":" << jsonData;
+        // qDebug() << "JSON sent to" << logId << ":" << jsonData;
     } else {
         emit errorOccurred(m_clientId, "Failed to send JSON data");
     }
@@ -139,7 +139,7 @@ void ClientConnection::processIncomingData()
 
         if (parseError.error == QJsonParseError::NoError) {
             QString logId = isLoggedIn() ? QString("user:%1").arg(m_userId) : QString("client:%1").arg(m_clientId);
-            qDebug() << "JSON received from" << logId << ":" << jsonData;
+            // qDebug() << "JSON received from" << logId << ":" << jsonData;
             emit jsonDataReceived(m_clientId, doc.object());
         } else {
             emit errorOccurred(m_clientId, QString("JSON parse error: %1").arg(parseError.errorString()));

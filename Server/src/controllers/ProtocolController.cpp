@@ -316,11 +316,11 @@ QJsonObject ProtocolController::handlePlantList(const QJsonObject &parameters)
 
 QJsonObject ProtocolController::handlePlantGet(const QJsonObject &parameters)
 {
-    id_t plantId = parameters.value("plantId").toInteger();
+    id_t userId = parameters.value("userId").toInteger();
 
-    const Plant* plant = plantService_->getPlantById(plantId);
-    if (plant) {
-        return createResponse("", "success", 200, "Plant found", plantToJson(plant));
+    QVector<Plant> plants = plantService_->getPlantsByUserId(userId);
+    if (plants[0].getId()>=0) {
+        return createResponse("", "success", 200, "Plant found", plantToJson(&(plants[0])));
     }
 
     return createErrorResponse("", "PLANT_NOT_FOUND", "Plant not found");
