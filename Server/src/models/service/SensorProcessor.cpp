@@ -1,12 +1,20 @@
 #include "SensorProcessor.h"
+#include "PlantManageService.h"
 #include <QDebug>
 
 void DBWorker::doWork(const SensorData& data){
 
+    SensorDB* sensorDB = SensorDB::getInstance();
+    sensorDB->addSensorData(data.plantId, data.temperature, data.humidity);
+    qDebug() << "[CONSUMER::DB] 처리 완료 - Plant:" << data.plantId;
 }
 
 void ServiceWorker::doWork(const SensorData& data){
-
+    // plant에 최신 센서 데이터 업데이트
+    PlantManageService *plantService = PlantManageService::getInstance();
+    plantService->updateTemperature(data.plantId, data.temperature);
+    plantService->updateHumidity(data.plantId, data.humidity);
+    qDebug() << "[CONSUMER::Plant] 처리 완료 - Plant:" << data.plantId;
 }
 
 
@@ -17,7 +25,6 @@ SensorProcessor::SensorProcessor(QObject *parent)
     , dbThread_(nullptr)
     , serviceThread_(nullptr)
     , dataQueue_(SensorDataQueue::getInstance())
-    , sensorDB_(SensorDB::getInstance())
 {
 }
 
@@ -46,11 +53,9 @@ void SensorProcessor::sensorDataProcess(){
 
     SensorData data;
     // 큐에서 데이터 읽어서 DB에 저장
-    while (dataQueue_->tryDequeue(data)) {
-        sensorDB_->addSensorData(data.plantId, data.temperature, data.humidity);
-        qDebug() << "[CONSUMER] 처리 완료 - Plant:" << data.plantId;
+    if(dataQueue_->tryDequeue(data)) {
+        emit processData(data);
     }
-    emit processData(data);
 }
 
 void SensorProcessor::start()

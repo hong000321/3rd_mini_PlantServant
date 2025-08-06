@@ -39,7 +39,6 @@ private:
     QThread* serviceThread_;
 
     SensorDataQueue* dataQueue_;
-    SensorDB* sensorDB_;
 
     SensorProcessor(QObject *parent = nullptr);
 

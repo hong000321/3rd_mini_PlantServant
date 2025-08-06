@@ -39,6 +39,10 @@ ServerMainWindow::ServerMainWindow(QWidget *parent)
     SensorProcessor* sensorProcessor = SensorProcessor::getInstance();
     sensorProcessor->start();
 
+    QTimer *sensorTimer = new QTimer(this);
+    connect(sensorTimer, &QTimer::timeout, sensorProcessor, &SensorProcessor::sensorDataProcess);
+    sensorTimer->start(50);
+
     // 상태 업데이트 타이머 설정
     connect(statusTimer_, &QTimer::timeout, this, &ServerMainWindow::updateServerStatus);
     statusTimer_->start(5000); // 5초마다 상태 업데이트
