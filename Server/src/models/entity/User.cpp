@@ -6,7 +6,7 @@ id_t User::getId() const {
 }
 
 id_t User::getPlantId() const {
-    return userId_;
+    return plantId_;
 }
 
 QString User::getstrId() const {
@@ -35,7 +35,7 @@ void User::setId(id_t id){
 }
 
 void User::setPlantId(id_t id){
-    userId_ = id;
+    plantId_ = id;
 }
 
 RaErrorCode User::connect(){

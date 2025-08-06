@@ -318,10 +318,16 @@ QJsonObject ProtocolController::handlePlantGet(const QJsonObject &parameters)
 {
     id_t userId = parameters.value("userId").toInteger();
 
-    QVector<Plant> plants = plantService_->getPlantsByUserId(userId);
-    if (plants[0].getId()>=0) {
-        return createResponse("", "success", 200, "Plant found", plantToJson(&(plants[0])));
+    User *user = userService_->getUserById(userId);
+    if (user){
+        id_t plantId = user->getPlantId();
+        qDebug() << "DEBUG PLANT :: plantId = " << plantId;
+        const Plant *plant = plantService_->getPlantById(plantId);
+        if (plant && plantId>=0) {
+            return createResponse("", "success", 200, "Plant found", plantToJson(plant));
+        }
     }
+
 
     return createErrorResponse("", "PLANT_NOT_FOUND", "Plant not found");
 }

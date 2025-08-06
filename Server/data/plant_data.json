@@ -1,37 +1,37 @@
 [
     {
-        "humidity": 38,
+        "humidity": 36,
         "nickname": "행복이",
         "plantId": 1,
-        "temperature": 37.87,
+        "temperature": 39.59,
         "userId": 1
     },
     {
-        "humidity": 72,
+        "humidity": 36,
         "nickname": "초록이",
         "plantId": 2,
-        "temperature": 25.2,
+        "temperature": 39.59,
         "userId": 1
     },
     {
-        "humidity": 45,
+        "humidity": 36,
         "nickname": "선인장친구",
         "plantId": 3,
-        "temperature": 22.8,
+        "temperature": 39.59,
         "userId": 2
     },
     {
-        "humidity": 68,
+        "humidity": 36,
         "nickname": "몬스테라",
         "plantId": 4,
-        "temperature": 24.1,
+        "temperature": 39.59,
         "userId": 2
     },
     {
-        "humidity": 70,
+        "humidity": 36,
         "nickname": "고무나무",
         "plantId": 5,
-        "temperature": 26.3,
+        "temperature": 39.59,
         "userId": 3
     },
     {
