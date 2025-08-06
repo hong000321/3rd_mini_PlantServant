@@ -11,6 +11,7 @@
 #include <QJsonArray>
 #include <QDebug>
 #include <QTimer>
+#include "SensorDataQueue.h"
 
 class HttpRestServer : public QObject
 {

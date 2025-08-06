@@ -44,17 +44,18 @@ QHttpServerResponse HttpRestServer::postSensorData(const QHttpServerRequest &req
     double temp = obj["temperature"].toDouble();
     int humi = obj["humidity"].toInt();
 
-    //여기에 DB 저장 또는 파일 기록 로직 추가 가능
-    SensorDB *sensorDB = SensorDB::getInstance();
+    // DB 저장 ,파일 기록 로직 추가 가능
+    // SensorDB *sensorDB = SensorDB::getInstance();
     UserManageService *userService = UserManageService::getInstance();
+    SensorDataQueue *sensorQueue = SensorDataQueue::getInstance();
+
     QVector<User> users = userService->getAllUsers();
 
     for(auto &user : users){
+        sensorQueue->enqueue(user.getPlantId(), temp, humi);
+        // sensorDB->addSensorData(user.getPlantId(),temp,humi);
 
-        sensorDB->addSensorData(user.getPlantId(),temp,humi);
     }
-
-
 
     qDebug() << "라즈베리파이로부터 수신:";
     qDebug() << "  온도:" << temp << "  습도:" << humi;

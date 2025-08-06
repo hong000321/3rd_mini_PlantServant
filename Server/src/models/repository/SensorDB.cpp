@@ -99,10 +99,6 @@ RaErrorCode SensorDB::addSensorData(id_t plantId, double temperature, int humidi
     }
 
     try {
-        // plant에 최신 센서 데이터 업데이트
-        PlantManageService *plantService = PlantManageService::getInstance();
-        plantService->updateTemperature(plantId, temperature);
-        plantService->updateHumidity(plantId, humidity);
 
         // sql에 저장
         QSqlQuery query(database_);

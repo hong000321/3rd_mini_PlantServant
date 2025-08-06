@@ -24,6 +24,7 @@ UTILS_DIR = $${SRC_DIR}/utils
 
 SOURCES += \
     src/controllers/HttpRestServer.cpp \
+    src/controllers/SensorDataQueue.cpp \
     src/main.cpp \
     src/ServerConfig.cpp \
     src/controllers/ProtocolController.cpp \
@@ -41,6 +42,7 @@ SOURCES += \
     src/models/service/LoginService.cpp \
     src/models/service/PlantManageService.cpp \
     src/models/service/PostManageService.cpp \
+    src/models/service/SensorProcessor.cpp \
     src/models/service/UserManageService.cpp \
     src/views/EnrollAdminWindow.cpp \
     src/views/ServerMainWindow.cpp \
@@ -54,6 +56,7 @@ HEADERS += \
     src/ServerConfig.h \
     src/controllers/HttpRestServer.h \
     src/controllers/ProtocolController.h \
+    src/controllers/SensorDataQueue.h \
     src/controllers/SocketServer.h \
     src/models/entity/Entity.h \
     src/models/entity/Plant.h \
@@ -68,6 +71,7 @@ HEADERS += \
     src/models/service/LoginService.h \
     src/models/service/PlantManageService.h \
     src/models/service/PostManageService.h \
+    src/models/service/SensorProcessor.h \
     src/models/service/UserManageService.h \
     src/views/EnrollAdminWindow.h \
     src/views/ServerMainWindow.h \
