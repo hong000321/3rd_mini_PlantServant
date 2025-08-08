@@ -60,33 +60,13 @@
         "userName": ""
     },
     {
-        "content": "토마토",
-        "createdAt": "2025-08-05T15:44:31",
-        "imagePath": "./../../data/post/post_20250805_154431_4554.png",
-        "postId": 14,
-        "title": "멋쟁이토마토",
-        "updatedAt": "2025-08-05T15:44:31",
-        "userId": 22,
-        "userName": "조수은"
-    },
-    {
-        "content": "다육이",
-        "createdAt": "2025-08-06T10:11:46",
-        "imagePath": "./../../data/post/post_20250806_101146_2896.png",
-        "postId": 17,
-        "title": "title",
-        "updatedAt": "2025-08-06T10:11:46",
-        "userId": 22,
-        "userName": "조수은"
-    },
-    {
-        "content": "tomato",
-        "createdAt": "2025-08-06T10:38:32",
-        "imagePath": "./../../data/post/post_20250806_103832_3278.png",
-        "postId": 19,
-        "title": "test title",
-        "updatedAt": "2025-08-06T10:38:32",
-        "userId": 22,
+        "content": "ㅋㅋ토마토 캐마니열림요",
+        "createdAt": "2025-08-06T20:37:31",
+        "imagePath": "./../../data/post/post_20250806_203731_5795.png",
+        "postId": 20,
+        "title": "멋쟁이 토마토",
+        "updatedAt": "2025-08-06T20:37:31",
+        "userId": 1,
         "userName": "조수은"
     }
 ]
