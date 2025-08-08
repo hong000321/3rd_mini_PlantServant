@@ -41,6 +41,9 @@ int main(int argc, char *argv[])
 
     QList<QScreen*> screens = QGuiApplication::screens();
     int targetScreenIndex = 2;
+    if((screens.size()-1)<targetScreenIndex){
+        targetScreenIndex = 0;
+    }
     QRect screenGeometry = screens[targetScreenIndex]->geometry();
 
     // 해당 화면의 중앙에 윈도우 배치
